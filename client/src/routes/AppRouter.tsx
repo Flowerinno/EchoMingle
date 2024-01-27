@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router'
-import { Main } from '../components'
-import { Home, Auth, Privacy, Terms, Profile, Plans, Contact } from '../pages'
+import { Main } from '@/components'
+import { Home, Auth, Privacy, Terms, Profile, Plans, Contact } from '@/pages'
 
 import { ERoutes } from './routes'
 
