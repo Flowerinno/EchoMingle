@@ -7,7 +7,7 @@ interface LinkProps {
   isHtml?: boolean
 }
 
-const linkStyle = 'text-sm text-red-400 hover:text-gray-900 '
+const linkStyle = 'text-sm md:text-2xl text-white hover:text-gray-900'
 
 export const Anchor = ({ label, to, isHtml }: LinkProps) => {
   if (isHtml) {

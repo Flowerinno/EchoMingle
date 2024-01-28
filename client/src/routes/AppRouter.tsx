@@ -1,10 +1,15 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route, useLocation } from 'react-router'
 import { Main } from '@/components'
 import { Home, Auth, Privacy, Terms, Profile, Plans, Contact } from '@/pages'
 
 import { ERoutes } from './routes'
+import { useEffect } from 'react'
 
 export const AppRouter = () => {
+  const location = useLocation()
+
+  useEffect(() => {}, [])
+
   return (
     <Routes>
       <Route element={<Main />}>

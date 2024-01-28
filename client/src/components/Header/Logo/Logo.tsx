@@ -5,7 +5,7 @@ export const Logo = () => {
   return (
     <div>
       <Link to='/'>
-        <img src={AppLogo} alt='EchoMingle Logo Image' width={70} height={70} />
+        <img src={AppLogo} alt='EchoMingle Logo Image' className='w-16 h-16 min-w-16 min-h-16' />
       </Link>
     </div>
   )

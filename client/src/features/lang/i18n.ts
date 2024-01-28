@@ -4,13 +4,13 @@ import en from './translations/en.json'
 import ua from './translations/ua.json'
 
 const i18n = createInstance({
-  fallbackLng: 'ua',
+  fallbackLng: 'en',
   lng: 'ua',
   debug: false,
   returnObjects: true,
   resources: {
-    en,
     ua,
+    en,
   },
 })
 
