@@ -7,4 +7,6 @@ export enum ERoutes {
   terms = '/terms',
   contact = '/contact',
   rooms = '/rooms',
+  pending = '/rooms/pending',
+  room = '/rooms/:id',
 }

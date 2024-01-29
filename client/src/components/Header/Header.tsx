@@ -12,6 +12,10 @@ interface HeaderProps {
 
 const notAuthedLinks = [
   {
+    label: 'rooms',
+    to: ERoutes.rooms,
+  },
+  {
     label: 'plans',
     to: ERoutes.plans,
   },

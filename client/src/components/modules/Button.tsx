@@ -16,7 +16,7 @@ export const Button = ({ label, onClick, disabled, size = 'medium' }: ButtonProp
 
   return (
     <button
-      className={`border-2 border-yellow-200 rounded-md ${SIZE} font-bold hover:bg-yellow-200 hover:text-black transition-colors duration-300 ease-in-out`}
+      className={`border-2 border-yellow-200 rounded-md ${SIZE} font-bold hover:bg-yellow-200 hover:text-black transition-colors duration-300 ease-in-out w-44`}
       onClick={onClick}
       disabled={disabled}
     >

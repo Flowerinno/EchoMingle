@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router'
 import { Main } from '@/components'
-import { Home, Auth, Privacy, Terms, Profile, Plans, Contact } from '@/pages'
+import { Home, Auth, Privacy, Terms, Profile, Plans, Contact, Rooms, Room, Pending } from '@/pages'
 
 import { ERoutes } from './routes'
 import { useEffect } from 'react'
@@ -22,6 +22,9 @@ export const AppRouter = () => {
         <Route path={ERoutes.plans} element={<Plans />} />
         <Route path={ERoutes.contact} element={<Contact />} />
         <Route path='*' element={<NotFound />} />
+        <Route path={ERoutes.rooms} element={<Rooms />} />
+        <Route path={ERoutes.pending} element={<Pending />} />
+        <Route path={ERoutes.room} element={<Room />} />
       </Route>
     </Routes>
   )
