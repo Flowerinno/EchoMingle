@@ -1,5 +1,21 @@
-import React from "react";
+import { ERoutes } from '@/routes'
+import { isAuthenticated } from '@/utils'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 
 export const Profile = () => {
-	return <div>Profile</div>;
-};
+  const navigate = useNavigate()
+  const isAuth = isAuthenticated()
+
+  useEffect(() => {
+    if (!isAuth) {
+      navigate(ERoutes.auth)
+    }
+  })
+
+  if (!isAuth) {
+    return null
+  }
+
+  return <div>Profile</div>
+}

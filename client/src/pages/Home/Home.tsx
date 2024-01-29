@@ -1,67 +1,72 @@
 import FirstImage from '@/assets/images/Home/1.png'
-import ThirdImage from '@/assets/images/Home/3.jpg'
 
-import { Image } from '@/components/modules'
-import { useEffect, useState } from 'react'
+import { Button, Plan } from '@/components/modules'
+import { ERoutes } from '@/routes'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 
 export const Home = () => {
   const { t } = useTranslation('home')
+  const navigate = useNavigate()
 
-  const [activeSection, setActiveSection] = useState('section-1')
+  const onClick = () => {
+    navigate(ERoutes.profile)
+  }
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const sections = document.querySelectorAll('section')
-
-      sections.forEach((section) => {
-        const sectionTop = section.offsetTop
-        const sectionHeight = section.offsetHeight
-
-        if (
-          scrollPosition >= sectionTop - 200 &&
-          scrollPosition < sectionTop + sectionHeight - 50
-        ) {
-          setActiveSection(section.id)
-        }
-      })
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleUrlAnchorChange = () => {
-      const sectionFromUrl = window.location.hash.substring(1)
-      setActiveSection(sectionFromUrl)
-    }
-
-    window.addEventListener('hashchange', handleUrlAnchorChange)
-    return () => {
-      window.removeEventListener('hashchange', handleUrlAnchorChange)
-    }
-  }, [])
-
-  useEffect(() => {
-    window.location.hash = activeSection
-  }, [activeSection])
+  const mockedPlans = [
+    {
+      id: 1,
+      title: t('section_2.plans.free.title'),
+      description: t('section_2.plans.free.description'),
+      price: '0$',
+      href: '/plans/checkout/1',
+    },
+    {
+      id: 2,
+      title: t('section_2.plans.yearly.title'),
+      description: t('section_2.plans.yearly.description'),
+      price: '29.99$',
+      href: '/plans/checkout/2',
+    },
+    {
+      id: 3,
+      title: t('section_2.plans.enterprise.title'),
+      description: t('section_2.plans.enterprise.description'),
+      price: 'Contact us',
+      href: '/plans/checkout/3',
+    },
+  ]
 
   return (
-    <div className='p-5 relative'>
-      <section className='z-10 absolute top-5 flex flex-col gap-5 text-white' id='section-1'>
-        <h1 className='font-bold text-4xl select-none'>{t('title')}</h1>
+    <div
+      className='p-5 relative flex flex-col gap-10 items-center w-full bg-fixed'
+      style={{
+        backgroundImage: `url(${FirstImage})`,
+        backgroundPositionY: 'top',
+        backgroundSize: 'cover',
+      }}
+    >
+      <section
+        id='section-1'
+        className='z-10 flex flex-col items-start  gap-5 text-white w-11/12 md:w-9/12'
+      >
+        <h1 className='font-bold text-4xl select-none text-yellow-200'>{t('title')}</h1>
         <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle')}</p>
+        <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle_1')}</p>
+        <span className='text-sm w-11/12 md:full font-bold text-yellow-200'>{t('subtitle_2')}</span>
+        <Button label='Mingle now!' size='large' onClick={onClick} />
       </section>
-      <Image src={FirstImage} alt='Landing Page EchoMingle' className='p-2 select-none' />
-      <section id='section-2' className='h-96'>
-        123
-      </section>
-      <section id='section-3' className='h-96'>
-        123
+      <section
+        className=' bottom-40 flex flex-col items-start gap-5 text-white w-11/12 md:w-9/12'
+        id='section-2'
+      >
+        <h1 className='font-bold text-4xl select-none text-yellow-200'>{t('section_2.title')}</h1>
+        <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle')}</p>
+        <div className='flex flex-row flex-wrap justify-around gap-5 w-11/12'>
+          {mockedPlans.map((plan, index) => {
+            return <Plan key={index} {...plan} />
+          })}
+        </div>
       </section>
     </div>
   )

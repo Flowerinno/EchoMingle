@@ -4,6 +4,7 @@ import { Home, Auth, Privacy, Terms, Profile, Plans, Contact } from '@/pages'
 
 import { ERoutes } from './routes'
 import { useEffect } from 'react'
+import { NotFound } from '@/pages/NotFound'
 
 export const AppRouter = () => {
   const location = useLocation()
@@ -20,6 +21,7 @@ export const AppRouter = () => {
         <Route path={ERoutes.profile} element={<Profile />} />
         <Route path={ERoutes.plans} element={<Plans />} />
         <Route path={ERoutes.contact} element={<Contact />} />
+        <Route path='*' element={<NotFound />} />
       </Route>
     </Routes>
   )

@@ -3,17 +3,20 @@ import { Link } from 'react-router-dom'
 
 interface LinkProps {
   label: string
-  to: ERoutes
+  to: ERoutes | string
   isHtml?: boolean
+  children?: React.ReactNode
 }
 
-const linkStyle = 'text-sm md:text-2xl text-white hover:text-gray-900'
+const linkStyle =
+  'text-white rounded-md font-bold hover:text-yellow-200 transition-colors duration-300 ease-in-out'
 
-export const Anchor = ({ label, to, isHtml }: LinkProps) => {
+export const Anchor = ({ label, to, isHtml, children }: LinkProps) => {
   if (isHtml) {
     return (
       <a href={to} className={linkStyle} target='_blank'>
         {label}
+        {children}
       </a>
     )
   }
