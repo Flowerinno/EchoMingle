@@ -1,12 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRoomDto } from './dto/create-w.dto';
 import { UpdateWDto } from './dto/update-w.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ConnectToRoomDto } from './dto/connect-to-room.dto';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class WsService {
   constructor(private readonly prisma: PrismaService) {}
-  createRoom(createRoomDto: CreateRoomDto) {
+
+  async connectToRoom(connectToRoomDto: ConnectToRoomDto, server: Server) {
+    const socketId = connectToRoomDto.socket_id;
+    console.log(socketId);
+    console.log(server.sockets);
+    // server.sockets[socketId].emit('onError', {
+    //   message: 'Room does not exist',
+    // });
+    try {
+      await this.prisma.room.findUniqueOrThrow({
+        where: {
+          id: connectToRoomDto.room_id,
+        },
+      });
+    } catch (error) {
+      server.sockets[socketId].emit('onError', {
+        message: 'Room does not exist',
+      });
+    }
     return 'This action adds a new w';
   }
 

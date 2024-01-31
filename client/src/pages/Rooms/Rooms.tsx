@@ -47,22 +47,24 @@ export const Rooms = () => {
   }, [])
 
   return (
-    <div>
-      <h2>Create a new mingle and share the link with your people.</h2>
-      <div className='flex flex-row gap-10 p-2'>
-        {!roomLink && <Button label='create room' onClick={generateRoom} />}
+    <div className='min-h-screen flex flex-col items-center justify-start'>
+      <h2 className='text-2xl font-bold text-yellow-200 text-center p-2'>
+        Create a new mingle and share the link with your people.
+      </h2>
+      <div className='flex flex-row gap-10 p-2 w-full'>
+        {!roomLink && <Button label='create room' onClick={generateRoom} className='w-full' />}
         {roomLink && (
-          <>
-            <Button label='join room' onClick={handleNavigate} />
+          <div className='flex flex-row flex-wrap gap-5'>
+            <Button label='Preview' onClick={handleNavigate} className='w-full' />
             <button
-              className='border-2 p-2 rounded-md border-yellow-200 text-white flex flex-row gap-2'
+              className='border-2 p-2 rounded-md border-yellow-200 text-white flex flex-row gap-2 w-full text-center items-center justify-center'
               value={roomLink}
               onClick={(e) => handleCopy(e?.currentTarget?.value)}
             >
               {roomLink}
               {isCopied ? <CopyCheckIcon /> : <Copy />}
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>

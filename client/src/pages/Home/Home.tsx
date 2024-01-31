@@ -54,7 +54,7 @@ export const Home = () => {
         <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle')}</p>
         <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle_1')}</p>
         <span className='text-sm w-11/12 md:full font-bold text-yellow-200'>{t('subtitle_2')}</span>
-        <Button label='Mingle now!' size='large' onClick={onClick} />
+        <Button label='Mingle now!' className='w-full' onClick={onClick} />
       </section>
       <section
         className=' bottom-40 flex flex-col items-start gap-5 text-white w-11/12 md:w-9/12'

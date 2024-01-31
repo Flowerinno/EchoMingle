@@ -2,24 +2,17 @@ interface ButtonProps {
   label: string | number
   onClick?: () => void
   disabled?: boolean
-  size?: 'small' | 'medium' | 'large'
+  className?: string
 }
 
-const styles = {
-  small: 'p-1 w-3/12',
-  medium: 'p-2 w-6/12',
-  large: 'p-4 w-9/12',
-}
+const defaultStyle =
+  'border-2 border-yellow-200 rounded-md  font-bold hover:bg-yellow-200 hover:text-black transition-colors duration-300 ease-in-out p-5'
 
-export const Button = ({ label, onClick, disabled, size = 'medium' }: ButtonProps) => {
-  const SIZE = styles[size]
+export const Button = ({ label, onClick, disabled, className }: ButtonProps) => {
+  const style = className ? `${defaultStyle} ${className}` : defaultStyle
 
   return (
-    <button
-      className={`border-2 border-yellow-200 rounded-md ${SIZE} font-bold hover:bg-yellow-200 hover:text-black transition-colors duration-300 ease-in-out w-44`}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button className={style} onClick={onClick} disabled={disabled}>
       {label}
     </button>
   )

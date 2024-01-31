@@ -1,29 +1,37 @@
-import { MicIcon, MicOff, Video, VideoOff } from 'lucide-react'
+import { MicIcon, MicOff, Video, VideoOff, Volume, Volume2, VolumeX } from 'lucide-react'
 import { useEffect } from 'react'
 
 interface MediaControllerProps {
-  toogle: (type: 'Audio' | 'Video', on: boolean) => void
+  toogle: (type: 'Audio' | 'Video' | 'Sound', on: boolean) => void
   audioEnabled?: boolean
   videoEnabled?: boolean
+  soundEnabled?: boolean
 }
 
-const style =
-  'border border-2 rounded-md p-1 text-white border-yellow-200 cursor-pointer min-w-14 min-h-8'
+const style = 'border border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-14 min-h-8'
 
 export const MediaController = ({
   toogle,
-  audioEnabled = false,
-  videoEnabled = false,
+  audioEnabled,
+  videoEnabled,
+  soundEnabled,
 }: MediaControllerProps) => {
   const Micro = !audioEnabled ? (
-    <MicOff className={style} onClick={() => toogle('Audio', true)} />
+    <MicOff className={`${style} text-red-400`} onClick={() => toogle('Audio', true)} />
   ) : (
-    <MicIcon className={style} onClick={() => toogle('Audio', false)} />
+    <MicIcon className={`${style} text-green-400`} onClick={() => toogle('Audio', false)} />
   )
-  const Vid = !videoEnabled ? (
-    <VideoOff className={style} onClick={() => toogle('Video', true)} />
+
+  const Sound = soundEnabled ? (
+    <Volume2 className={`${style} text-green-400`} onClick={() => toogle('Sound', false)} />
   ) : (
-    <Video className={style} onClick={() => toogle('Video', false)} />
+    <VolumeX className={`${style} text-red-400`} onClick={() => toogle('Sound', true)} />
+  )
+
+  const Vid = !videoEnabled ? (
+    <VideoOff className={`${style} text-red-400`} onClick={() => toogle('Video', true)} />
+  ) : (
+    <Video className={`${style} text-green-400`} onClick={() => toogle('Video', false)} />
   )
 
   useEffect(() => {
@@ -34,8 +42,9 @@ export const MediaController = ({
   }, [])
 
   return (
-    <div className='flex flex-flow gap-5'>
+    <div className='flex flex-flow gap-5 justify-center w-full'>
       {Micro}
+      {Sound}
       {Vid}
     </div>
   )

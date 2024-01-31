@@ -3,6 +3,8 @@ export interface ServerToClientEvents {
   basicEmit: (a: number, b: string, c: Buffer) => void
   withAck: (d: string, callback: (e: number) => void) => void
   onError: (obj: { message: string }) => void
+  connection: (sockets: string[]) => void
+  server_stream: (payload: ServerStream) => void
 }
 
 export interface ClientToServerEvents {
@@ -13,13 +15,26 @@ export interface ClientToServerEvents {
     socket_id: string
     username: string
   }) => void
+  stream: (payload: ClientStream) => void
 }
 
 export interface InterServerEvents {
   ping: () => void
 }
 
-export interface SocketData {
-  name: string
-  age: number
+interface ClientStream {
+  room_id: string
+  stream: MediaStream | null
+  audioEnabled?: boolean
+  videoEnabled?: boolean
+  soundEnabled?: boolean
+}
+
+interface ServerStream {
+  room_id: string
+  stream: MediaStream | null
+  socket_id: string
+  audioEnabled?: boolean
+  videoEnabled?: boolean
+  soundEnabled?: boolean
 }

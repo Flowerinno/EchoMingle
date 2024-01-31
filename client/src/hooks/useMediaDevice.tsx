@@ -1,15 +1,23 @@
 import { ToastifyRoot } from '@/features'
 import { useEffect, useState } from 'react'
 
+type Settings = {
+  audioEnabled: boolean
+  videoEnabled: boolean
+  soundEnabled: boolean
+}
+
 interface MediaDeviceProps {
   STREAM?: MediaStream
   isAutoStart?: boolean
+  cache?: Settings
 }
 
-export const useMediaDevice = ({ STREAM, isAutoStart = false }: MediaDeviceProps) => {
+export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDeviceProps) => {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [isVideoEnabled, setIsVideoEnabled] = useState<boolean | null>(null)
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
+  const [soundEnabled, setSoundEnabled] = useState(false)
 
   const constraints = {
     video: {
@@ -20,11 +28,18 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false }: MediaDeviceProps
   }
 
   const start = () => {
-    console.log('here')
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
         setStream(stream)
+
+        if (cache) {
+          setIsAudioEnabled(cache.audioEnabled)
+          setIsVideoEnabled(cache.videoEnabled)
+          stream.getAudioTracks()[0].enabled = cache.audioEnabled
+          stream.getVideoTracks()[0].enabled = cache.videoEnabled
+          return
+        }
         setIsAudioEnabled(stream.getAudioTracks()[0].enabled)
         setIsVideoEnabled(stream.getVideoTracks()[0].enabled)
       })
@@ -33,7 +48,13 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false }: MediaDeviceProps
       })
   }
 
-  const toogle = (type: 'Audio' | 'Video', on: boolean) => {
+  const toogle = (type: 'Audio' | 'Video' | 'Sound', on: boolean) => {
+    if (type === 'Sound') {
+      console.log('sound enabled', type, on)
+      setSoundEnabled(on)
+      return
+    }
+
     if (stream) {
       stream[`get${type}Tracks`]().forEach((track) => {
         track.enabled = on
@@ -41,15 +62,6 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false }: MediaDeviceProps
       })
     }
   }
-
-  // if (STREAM) {
-  //   setStream(STREAM)
-  //   return {
-  //     stream,
-  //     start,
-  //     toogle,
-  //   }
-  // }
 
   useEffect(() => {
     if (isAutoStart && !stream) {
@@ -61,11 +73,25 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false }: MediaDeviceProps
     }
   }, [])
 
+  useEffect(() => {
+    //save user settings
+    if (stream)
+      window.localStorage.setItem(
+        'echomingle_media_settings',
+        JSON.stringify({
+          audioEnabled: isAudioEnabled,
+          videoEnabled: isVideoEnabled,
+          soundEnabled: !soundEnabled,
+        }),
+      )
+  }, [isAudioEnabled, isVideoEnabled, soundEnabled])
+
   return {
     stream,
     start,
     toogle,
     audioEnabled: stream?.getAudioTracks()[0]?.enabled,
     videoEnabled: stream?.getVideoTracks()[0]?.enabled,
+    soundEnabled,
   }
 }
