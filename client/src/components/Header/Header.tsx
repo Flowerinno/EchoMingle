@@ -1,6 +1,6 @@
 import { Anchor } from '@/components/modules/Anchor'
-import { Logo } from './Logo/Logo'
 import { ERoutes } from '@/routes/routes'
+import { Logo } from './Logo/Logo'
 
 interface HeaderProps {
   user?: {

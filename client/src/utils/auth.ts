@@ -1,8 +1,9 @@
 import Cookies from 'js-cookie'
 
-export const isAuthenticated = () => {
-  //   const token = Cookies.get('token')
-  //mocked token
-  const token = '123'
-  return  false
+export const getToken = () => {
+  return Cookies.get('echomingle_user_token')
+}
+
+export const setToken = (token: string) => {
+  Cookies.set('echomingle_user_token', token, { expires: 7 })
 }
