@@ -17,16 +17,15 @@ export class AuthService {
     }
 
     const { email, name } = userInfo.data;
-
+    let token;
     let user = await this.prisma.user.findUnique({
       where: {
         email,
       },
     });
 
-    const token = generateToken(user.email, user.id);
-
     if (user) {
+      token = generateToken(user?.email, user?.id);
       return { id: user.id, email: user.email, name: user.name, token };
     }
 
@@ -36,7 +35,7 @@ export class AuthService {
         name,
       },
     });
-
+    token = generateToken(user?.email, user?.id);
     return { id: user.id, email: user.email, name: user.name, token };
   }
 
