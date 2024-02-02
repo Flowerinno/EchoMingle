@@ -24,8 +24,10 @@ export class AuthService {
       },
     });
 
+    const token = generateToken(user.email, user.id);
+
     if (user) {
-      return user;
+      return { id: user.id, email: user.email, name: user.name, token };
     }
 
     user = await this.prisma.user.create({
@@ -35,9 +37,25 @@ export class AuthService {
       },
     });
 
-    //base64 token of user.email_user.id
-    const token = generateToken(user.email, user.id);
-
     return { id: user.id, email: user.email, name: user.name, token };
+  }
+
+  async verifyToken(token: string) {
+    const [email, id] = Buffer.from(token, 'base64').toString()?.split('_');
+
+    if (!email || !id) return null;
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+        id,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return { id: user.id, email: user.email, name: user.name };
   }
 }

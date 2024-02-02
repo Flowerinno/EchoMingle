@@ -1,19 +1,14 @@
-import { Header, Footer } from '..'
+import { getToken } from '@/utils'
 import { Outlet } from 'react-router'
-
-const mockedUserData = {
-  name: 'John Doe',
-  email: 'akellastoopi@gmail.com',
-  token: '1234567890',
-}
+import { Footer, Header } from '..'
 
 export const Main = () => {
-  //fetch user data
+  const token = getToken()
 
   return (
     <div className='flex flex-col items-center'>
-      <Header />
-      <Outlet context={mockedUserData} />
+      <Header token={token} />
+      <Outlet />
       <Footer />
     </div>
   )

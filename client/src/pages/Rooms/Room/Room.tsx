@@ -3,6 +3,7 @@ import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { socket } from '@/lib/ws'
 import { ERoutes } from '@/routes'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 type Settings = {
@@ -12,6 +13,7 @@ type Settings = {
 }
 
 export const Room = () => {
+  const { t } = useTranslation('room')
   const [clients, setClients] = useState<string[]>([])
   const navigate = useNavigate()
   const [message, setMessage] = useState('')

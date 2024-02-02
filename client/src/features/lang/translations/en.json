@@ -1,6 +1,64 @@
 {
   "home": {
-    "title": "Welcome to EchoMingle",
-    "subtitle": "EchoMingle is a social media platform that allows users to create rooms and mingle with other users in real time."
+    "title": "Welcome to EchoMingle!",
+    "subtitle": "EchoMingle is a platform that allows you to `mingle` in real-time. All you need is a webcam and a microphone.",
+    "subtitle_1": "Easily communicate with your colleagues, friends, and family from anywhere in the world. Ukrainian language is now available to all EchoMingle users. Join us!",
+    "subtitle_2": "Try EchoMingle right now! The first month of mingling is free! Ukrainians enjoy a special offer: 50% discount on the annual subscription plan.",
+    "section_2": {
+      "title": "What about the price!?",
+      "plans": {
+        "free": {
+          "title": "Free",
+          "description": "The first month of mingling is free!"
+        },
+        "yearly": {
+          "title": "Yearly Plan",
+          "description": "Stay connected for the whole year! 50% discount for Ukrainians!"
+        },
+        "enterprise": {
+          "title": "Business",
+          "description": "Contact us for information on business plans."
+        }
+      }
+    }
+  },
+  "profile": {
+    "logout": "Logout"
+  },
+  "header": {
+    "contact": "contact",
+    "rooms": "rooms",
+    "profile": "profile",
+    "auth": "auth",
+    "plans": "plans"
+  },
+  "footer": {
+    "home": "home",
+    "contact": "contact",
+    "rooms": "rooms",
+    "profile": "profile",
+    "auth": "auth",
+    "plans": "plans"
+  },
+  "auth": {
+    "login_label": "Sign in with google!",
+    "welcome": "Welcome to EchoMingle!",
+    "error": "An error occurred while trying to sign in. Please try again."
+  },
+  "rooms": {
+    "title": "Create a new mingle and share the link with others!",
+    "create": "Create mingle",
+    "preview": "Go to preview",
+    "copied": "Link copied!",
+    "error": "Failed to create a new mingle. Please try again."
+  },
+  "useCopy": {
+    "not_supported": "Copy to clipboard is not supported in your browser. Please copy the link manually.",
+    "success": "Copied to clipboard.",
+    "error": "Failed to copy."
+  },
+  "pending": {
+    "title": "You are about to enter the room!",
+    "join": "Join the mingle"
   }
 }

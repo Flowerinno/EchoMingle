@@ -1,31 +1,32 @@
 import { ERoutes } from '@/routes/routes'
-import { Anchor } from '../modules'
 import { Github } from 'lucide-react'
-
-const links = [
-  {
-    id: 1,
-    label: 'Home',
-    href: ERoutes.home,
-  },
-  {
-    id: 2,
-    label: 'Profile',
-    href: ERoutes.profile,
-  },
-  {
-    id: 3,
-    label: 'Contact',
-    href: ERoutes.contact,
-  },
-  {
-    id: 4,
-    label: 'Auth',
-    href: ERoutes.auth,
-  },
-]
+import { useTranslation } from 'react-i18next'
+import { Anchor } from '../modules'
 
 export const Footer = () => {
+  const { t } = useTranslation('footer')
+  const links = [
+    {
+      id: 1,
+      label: t('home'),
+      href: ERoutes.home,
+    },
+    {
+      id: 2,
+      label: t('profile'),
+      href: ERoutes.profile,
+    },
+    {
+      id: 3,
+      label: t('contact'),
+      href: ERoutes.contact,
+    },
+    {
+      id: 4,
+      label: t('auth'),
+      href: ERoutes.auth,
+    },
+  ]
   return (
     <>
       <ul className='bg-none p-5 flex flex-row gap-5'>

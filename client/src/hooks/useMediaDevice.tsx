@@ -50,7 +50,6 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDevi
 
   const toogle = (type: 'Audio' | 'Video' | 'Sound', on: boolean) => {
     if (type === 'Sound') {
-      console.log('sound enabled', type, on)
       setSoundEnabled(on)
       return
     }

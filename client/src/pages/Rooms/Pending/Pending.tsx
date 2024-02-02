@@ -3,6 +3,7 @@ import { Button } from '@/components/modules'
 import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { ERoutes } from '@/routes'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { useSearchParams } from 'react-router-dom'
 
@@ -13,7 +14,7 @@ type Settings = {
 }
 
 export const Pending = () => {
-  //auth here required!
+  const { t } = useTranslation('pending')
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const roomId = params.get('room_id')
@@ -22,7 +23,7 @@ export const Pending = () => {
     window.localStorage.getItem('echomingle_media_settings') as string,
   ) as Settings
 
-  const { stream, toogle, audioEnabled, videoEnabled } = useMediaDevice({
+  const { stream, toogle, soundEnabled, audioEnabled, videoEnabled } = useMediaDevice({
     isAutoStart: true,
     cache,
   })
@@ -39,16 +40,17 @@ export const Pending = () => {
 
   return (
     <div className='flex flex-col gap-5 items-center justify-start min-h-screen p-3'>
-      <h1 className='text-2xl text-yellow-200 font-bold'>You are about to join the room</h1>
+      <h1 className='text-2xl text-yellow-200 font-bold'>{t('title')}</h1>
       <Media
         isAutoStart
         isLocal
         toogle={toogle}
+        soundEnabled={soundEnabled}
         audioEnabled={audioEnabled}
         videoEnabled={videoEnabled}
         stream={stream}
       />
-      <Button label={'Join'} className='w-6/12' onClick={joinRoom} />
+      <Button label={t('join')} className='w-8/12' onClick={joinRoom} />
     </div>
   )
 }

@@ -1,12 +1,12 @@
-import { ToastContainer } from 'react-toastify'
-import { AppRouter, ERoutes } from './routes'
 import CookieConsent from 'react-cookie-consent'
+import { ToastContainer } from 'react-toastify'
+import { AppRouter } from './routes'
 
 function App() {
   return (
     <>
       <AppRouter />
-      <ToastContainer hideProgressBar autoClose={3000} />
+      <ToastContainer closeOnClick hideProgressBar autoClose={1500} />
       <CookieConsent
         location='bottom'
         buttonText='Accept'

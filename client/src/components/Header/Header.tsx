@@ -1,36 +1,31 @@
 import { Anchor } from '@/components/modules/Anchor'
 import { ERoutes } from '@/routes/routes'
+import { useTranslation } from 'react-i18next'
 import { Logo } from './Logo/Logo'
 
 interface HeaderProps {
-  user?: {
-    name: string
-    email: string
-    token: string
-  }
+  token?: string
 }
 
-const notAuthedLinks = [
-  {
-    label: 'rooms',
-    to: ERoutes.rooms,
-  },
-  {
-    label: 'plans',
-    to: ERoutes.plans,
-  },
-  {
-    label: 'auth',
-    to: ERoutes.auth,
-  },
-  {
-    label: 'contact',
-    to: ERoutes.contact,
-  },
-]
+export const Header = ({ token }: HeaderProps) => {
+  const { t } = useTranslation('header')
 
-export const Header = ({ user }: HeaderProps) => {
-  if (!user) {
+  const notAuthedLinks = [
+    {
+      label: t('plans'),
+      to: ERoutes.plans,
+    },
+    {
+      label: t('contact'),
+      to: ERoutes.contact,
+    },
+    {
+      label: t('auth'),
+      to: ERoutes.auth,
+    },
+  ]
+
+  if (!token) {
     return (
       <div className='flex flex-row justify-between w-full p-4 items-center'>
         <Logo />
@@ -47,8 +42,8 @@ export const Header = ({ user }: HeaderProps) => {
     <div className='flex flex-row justify-between w-full p-4 items-center'>
       <Logo />
       <div className='flex-1 flex flex-row gap-5 justify-end'>
-        <Anchor to={ERoutes.rooms} label='rooms' />
-        <Anchor to={ERoutes.profile} label='profile' />
+        <Anchor to={ERoutes.rooms} label={t('rooms')} />
+        <Anchor to={ERoutes.profile} label={t('profile')} />
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import { ERoutes } from '@/routes'
-import { Button } from './Button'
 import { useNavigate } from 'react-router'
+import { Button } from './Button'
 
 interface PlanProps {
   title: string
@@ -28,7 +28,7 @@ export const Plan = ({ title, description, price, isFullWidth, href }: PlanProps
         <h1 className='text-yellow-200 font-bold text-2xl text-center'>{title}</h1>
         <p className='text-center'>{description}</p>
       </div>
-      <Button label={price} onClick={onClick} />
+      <Button className='w-48' label={price} onClick={onClick} />
     </div>
   )
 }

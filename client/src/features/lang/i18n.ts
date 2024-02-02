@@ -14,6 +14,8 @@ const i18n = createInstance({
   },
 })
 
-i18n.use(initReactI18next).init()
+i18n.use(initReactI18next).init(() => {
+  console.log('translations loaded')
+})
 
 export default i18n
