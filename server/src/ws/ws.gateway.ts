@@ -1,19 +1,18 @@
+import { Logger } from '@nestjs/common';
 import {
-  WebSocketGateway,
-  SubscribeMessage,
   MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { WsService } from './ws.service';
-import { UpdateWDto } from './dto/update-w.dto';
-import { ConnectToRoomDto } from './dto/connect-to-room.dto';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
 import { ClientStreamDto } from './dto/client-stream.dto';
+import { ConnectToRoomDto } from './dto/connect-to-room.dto';
+import { WsService } from './ws.service';
 
 const connections = [];
 
-@WebSocketGateway(8090, {
+@WebSocketGateway({
   cors: { origin: '*' },
   namespace: 'ws',
 })

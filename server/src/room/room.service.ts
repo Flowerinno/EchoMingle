@@ -41,8 +41,10 @@ export class RoomService {
       },
     });
 
+    if (!room) return null;
+
     return {
-      isDeleted: room.isDeleted,
+      isDeleted: room?.isDeleted,
       room_id: room.id,
     };
   }
