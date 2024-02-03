@@ -24,29 +24,45 @@ export class WsGateway {
   logger = new Logger(WsGateway.name);
 
   @SubscribeMessage('disconnect')
-  async handleDisconnect(client: Socket) {
-    connections.splice(connections.indexOf(client.id), 1);
-    this.server.emit('connection', connections);
-    this.logger.log(`Client disconnected: ${client.id}`);
+  async handleDisconnect(client: Socket, room_id: string) {
+    return await this.wsService.handleDisconnect(room_id, client, this.server);
   }
 
   @SubscribeMessage('connect')
   async handleConnection(client: Socket) {
-    connections.push(client.id);
-    this.server.emit('connection', connections);
     this.logger.log(`Client connected: ${client.id}`);
   }
 
-  @SubscribeMessage('stream')
-  async handleClientStream(client: Socket, payload: ClientStreamDto) {
-    if (!payload.stream) return;
+  @SubscribeMessage('candidate')
+  async handleCandidate(client: Socket, payload: any) {
+    this.logger.log(`Emitting client ${client.id} candidate`);
 
-    this.server.emit('server_stream', {
-      stream: payload.stream,
+    this.server.emit('server_candidate', {
+      candidate: payload.candidate,
       socket_id: client.id,
-      audioEnabled: payload.audioEnabled,
-      videoEnabled: payload.videoEnabled,
-      soundEnabled: payload.soundEnabled,
+    });
+  }
+
+  @SubscribeMessage('answer')
+  async handleAnswer(client: Socket, payload: any) {
+    this.logger.log(`Emitting client ${client.id} answer`);
+
+    this.server.emit('server_answer', {
+      answer: payload.answer,
+      socket_id: client.id,
+    });
+  }
+
+  @SubscribeMessage('offer')
+  async handleClientStream(client: Socket, payload: ClientStreamDto) {
+    if (!payload.offer) return;
+
+    this.logger.log(`Emitting client ${client.id} stream`);
+
+    client.broadcast.emit('answer_to_offer', {
+      answer: payload.offer,
+      socket_id: client.id,
+      room_id: payload.room_id,
     });
   }
 
@@ -58,7 +74,7 @@ export class WsGateway {
       socket_id: connectToRoomDto.socket_id,
       username: connectToRoomDto.username,
     };
-    console.log(user.socket_id);
+
     return this.wsService.connectToRoom(user, this.server);
   }
 }

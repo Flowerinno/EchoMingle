@@ -1,5 +1,4 @@
-import { useMediaDevice } from '@/hooks/useMediaDevice'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { MediaController } from '../modules'
 
 type Settings = {
@@ -12,7 +11,7 @@ interface MediaDeviceProps {
   isAutoStart?: boolean
   isLocal?: boolean
   stream: MediaStream | null
-  toogle: (type: 'Audio' | 'Video' | 'Sound', on: boolean) => void
+  toogle?: (type: 'Audio' | 'Video' | 'Sound', on: boolean) => void
   audioEnabled?: boolean
   videoEnabled?: boolean
   soundEnabled?: boolean
@@ -24,9 +23,9 @@ export const Media = ({
   isLocal = false,
   stream,
   toogle,
-  audioEnabled,
-  videoEnabled,
-  soundEnabled,
+  audioEnabled = true,
+  videoEnabled = true,
+  soundEnabled = true,
   cache,
 }: MediaDeviceProps) => {
   const ref = useRef<HTMLVideoElement>(null)

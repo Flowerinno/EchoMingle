@@ -2,7 +2,6 @@ import { Button } from '@/components/modules'
 import { useEffect, useState } from 'react'
 
 import { api } from '@/api/api'
-import { config } from '@/config/env.config'
 import { ToastifyRoot } from '@/features'
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard'
 import { VerifyResponse } from '@/types/auth.types'
@@ -19,7 +18,7 @@ export const Rooms = () => {
   const [roomLink, setRoomLink] = useState('')
 
   const user = useOutletContext<VerifyResponse>()
-
+  const domain = new URL(window.location.href).origin
   const generateRoom = async () => {
     const room = await createRoom(user.email)
 
@@ -44,7 +43,7 @@ export const Rooms = () => {
         if (!data?.room_id) return
 
         setRoomId(data?.room_id)
-        setRoomLink(config.origin_url + `/rooms/pending?room_id=${data?.room_id}`)
+        setRoomLink(domain + `/rooms/pending?room_id=${data?.room_id}`)
       })
     }
   }, [])

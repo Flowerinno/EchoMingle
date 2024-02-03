@@ -18,6 +18,17 @@ model Room {
   isDeleted   Boolean   @default(false)
   users       User[]
   messages    Message[]
+  sockets     Socket[]
+}
+
+model Socket {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Room      Room     @relation(fields: [roomId], references: [id])
+  roomId    String
+  socketId  String
+  isDeleted Boolean  @default(false)
 }
 
 model User {

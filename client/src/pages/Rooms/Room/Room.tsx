@@ -1,8 +1,10 @@
 import { Media } from '@/components'
+import { ToastifyRoot } from '@/features'
 import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { socket } from '@/lib/ws'
 import { ERoutes } from '@/routes'
-import { useEffect, useState } from 'react'
+import { addIceCandidate, createAnswer, createOffer, createPeerConnection } from '@/utils/webrtc'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
@@ -12,27 +14,25 @@ type Settings = {
   soundEnabled: boolean
 }
 
+type Client = {
+  id: string
+  audioEnabled: boolean
+  videoEnabled: boolean
+  soundEnabled: boolean
+  stream: MediaStream
+}
+
 export const Room = () => {
   const { t } = useTranslation('room')
-  const [clients, setClients] = useState<string[]>([])
+  const [clients, setClients] = useState<Client[] | []>([])
   const navigate = useNavigate()
-  const [message, setMessage] = useState('')
   const roomId = window.location.pathname.split('rooms/')[1]
 
   const cache = JSON.parse(
     window.localStorage.getItem('echomingle_media_settings') as string,
   ) as Settings
 
-  const { stream, toogle, audioEnabled, videoEnabled, soundEnabled } = useMediaDevice({
-    isAutoStart: true,
-    cache,
-  })
-
-  socket.on('onError', (data) => {
-    setMessage('')
-    setMessage(data.message)
-    return
-  })
+  const pc = useRef(createPeerConnection())
 
   useEffect(() => {
     if (!roomId) {
@@ -45,27 +45,74 @@ export const Room = () => {
     }
   }, [])
 
-  useEffect(() => {
-    socket.on('connection', (sockets) => {
-      setClients(() => sockets)
-      return
-    })
+  const { stream, toogle, audioEnabled, videoEnabled, soundEnabled } = useMediaDevice({
+    isAutoStart: true,
+    cache,
+  })
 
-    return () => {
-      socket.off('connection')
-    }
-  }, [clients.length])
-
-  socket.on('server_stream', (data) => {
-    console.log(data)
+  socket.on('onError', (data) => {
+    if (!data?.message) return
+    ToastifyRoot.error(data.message)
   })
 
   useEffect(() => {
-    socket.emit('stream', { room_id: roomId, stream, audioEnabled, videoEnabled, soundEnabled })
+    if (!stream) return
+
+    createOffer(pc.current, stream)
+
+    if (pc.current.localDescription) {
+      socket.emit('offer', {
+        room_id: roomId,
+        offer: pc.current.localDescription,
+      })
+    }
   }, [stream])
 
+  socket.on('answer_to_offer', (data) => {
+    if (!data.answer) return
+    if (!stream) return
+
+    createAnswer(pc.current, stream, data.answer)
+
+    socket.emit('answer', {
+      room_id: roomId,
+      answer: pc.current.localDescription,
+    })
+  })
+
+  socket.on('server_answer', (data: any) => {
+    if (!data.answer) return
+    pc.current.setRemoteDescription(new RTCSessionDescription(data.answer))
+  })
+
+  pc.current.onicecandidate = ({ candidate }) => {
+    if (!candidate) return
+    socket.emit('candidate', { room_id: roomId, candidate })
+  }
+
+  socket.on('server_candidate', (data: any) => {
+    if (!data.candidate) return
+    addIceCandidate(pc.current, data.candidate)
+  })
+
+  pc.current.ontrack = (event) => {
+    const stream = event.streams[0]
+    const client = {
+      id: event.track.id,
+      audioEnabled: true,
+      videoEnabled: true,
+      soundEnabled: true,
+      stream,
+    }
+
+    const copy = [...clients]
+    copy.push(client)
+
+    setClients(() => [...new Set(copy)])
+  }
+
   return (
-    <div className='flex flex-col gap-5 items-center justify-start min-h-screen'>
+    <div className='flex flex-row flex-wrap gap-5 items-start justify-start min-h-screen'>
       <Media
         isAutoStart
         isLocal
@@ -75,7 +122,20 @@ export const Room = () => {
         soundEnabled={soundEnabled}
         stream={stream}
       />
-      {message && <p className='text-red-300'>{message}</p>}
+      {clients.length > 0 &&
+        clients.map((client) => {
+          return (
+            <Media
+              key={client.id}
+              stream={client.stream}
+              audioEnabled={true}
+              videoEnabled={true}
+              soundEnabled={true}
+              isAutoStart
+              isLocal={false}
+            />
+          )
+        })}
     </div>
   )
 }

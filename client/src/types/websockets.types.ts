@@ -4,7 +4,9 @@ export interface ServerToClientEvents {
   withAck: (d: string, callback: (e: number) => void) => void
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
-  server_stream: (payload: ServerStream) => void
+  answer_to_offer: (payload: ServerStream) => void
+  server_candidate: (payload: any) => void
+  server_answer: (payload: any) => void
 }
 
 export interface ClientToServerEvents {
@@ -15,7 +17,9 @@ export interface ClientToServerEvents {
     socket_id: string
     username: string
   }) => void
-  stream: (payload: ClientStream) => void
+  offer: (payload: ClientStream) => void
+  answer: (payload: any) => void
+  candidate: (payload: any) => void
 }
 
 export interface InterServerEvents {
@@ -24,17 +28,16 @@ export interface InterServerEvents {
 
 interface ClientStream {
   room_id: string
-  stream: MediaStream | null
-  audioEnabled?: boolean
-  videoEnabled?: boolean
-  soundEnabled?: boolean
+  offer: RTCSessionDescriptionInit
 }
 
 interface ServerStream {
+  id: string
   room_id: string
-  stream: MediaStream | null
+  answer: RTCSessionDescriptionInit
   socket_id: string
-  audioEnabled?: boolean
-  videoEnabled?: boolean
-  soundEnabled?: boolean
+  // stream: MediaStream | null
+  // audioEnabled?: boolean
+  // videoEnabled?: boolean
+  // soundEnabled?: boolean
 }

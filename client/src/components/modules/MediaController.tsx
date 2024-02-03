@@ -1,8 +1,8 @@
-import { MicIcon, MicOff, Video, VideoOff, Volume, Volume2, VolumeX } from 'lucide-react'
+import { MicIcon, MicOff, Video, VideoOff, Volume2, VolumeX } from 'lucide-react'
 import { useEffect } from 'react'
 
 interface MediaControllerProps {
-  toogle: (type: 'Audio' | 'Video' | 'Sound', on: boolean) => void
+  toogle?: (type: 'Audio' | 'Video' | 'Sound', on: boolean) => void
   audioEnabled?: boolean
   videoEnabled?: boolean
   soundEnabled?: boolean
@@ -16,6 +16,10 @@ export const MediaController = ({
   videoEnabled,
   soundEnabled,
 }: MediaControllerProps) => {
+  if (!toogle) {
+    return null
+  }
+
   const Micro = !audioEnabled ? (
     <MicOff className={`${style} text-red-400`} onClick={() => toogle('Audio', true)} />
   ) : (
