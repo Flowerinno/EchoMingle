@@ -1,6 +1,5 @@
 import { ToastifyRoot } from '@/features'
 import { useEffect, useRef, useState } from 'react'
-import { MediaController } from '../modules'
 
 type Settings = {
   audioEnabled: boolean
@@ -76,15 +75,6 @@ export const Media = ({
           }
         }}
       />
-
-      {isLocal && (
-        <MediaController
-          toogle={toogle}
-          soundEnabled={soundEnabled}
-          audioEnabled={audioEnabled}
-          videoEnabled={videoEnabled}
-        />
-      )}
     </div>
   )
 }

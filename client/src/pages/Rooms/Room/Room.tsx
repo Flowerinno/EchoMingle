@@ -1,4 +1,5 @@
 import { Media } from '@/components'
+import { MediaController } from '@/components/modules'
 import { ToastifyRoot } from '@/features'
 import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { socket } from '@/lib/ws'
@@ -131,35 +132,45 @@ export const Room = () => {
       setSTREAMS(() => [stream])
     }
   }, [STREAMS.length])
-  console.log(STREAMS)
-  return (
-    <div className='flex flex-row flex-wrap gap-5 items-start justify-center min-h-screen'>
-      <Media
-        isAutoStart
-        isLocal
-        toogle={toogle}
-        audioEnabled={audioEnabled}
-        videoEnabled={videoEnabled}
-        soundEnabled={soundEnabled}
-        stream={stream}
-      />
 
-      {
-        STREAMS.length > 0 && (
-          // STREAMS.map((stream, i) => {
-          //   return (
-          <Media
-            // key={i}
-            stream={STREAMS[0]}
-            audioEnabled={true}
-            videoEnabled={true}
-            soundEnabled={true}
-            isAutoStart
-            message='REMOTE'
-          />
-        )
-        // )
-      }
+  return (
+    <div className='flex flex-col gap-5 items-center justify-start min-h-screen'>
+      <div className='flex flex-row flex-wrap gap-5 items-start justify-center'>
+        <Media
+          isAutoStart
+          isLocal
+          toogle={toogle}
+          audioEnabled={audioEnabled}
+          videoEnabled={videoEnabled}
+          soundEnabled={soundEnabled}
+          stream={stream}
+        />
+
+        {
+          STREAMS.length > 0 && (
+            // STREAMS.map((stream, i) => {
+            //   return (
+            <Media
+              // key={i}
+              stream={STREAMS[0]}
+              audioEnabled={true}
+              videoEnabled={true}
+              soundEnabled={true}
+              isAutoStart
+              message='REMOTE'
+            />
+          )
+          // )
+        }
+      </div>
+      <div>
+        <MediaController
+          toogle={toogle}
+          soundEnabled={soundEnabled}
+          audioEnabled={audioEnabled}
+          videoEnabled={videoEnabled}
+        />
+      </div>
     </div>
   )
 }
