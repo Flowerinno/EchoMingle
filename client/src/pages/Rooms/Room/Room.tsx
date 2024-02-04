@@ -3,10 +3,15 @@ import { ToastifyRoot } from '@/features'
 import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { socket } from '@/lib/ws'
 import { ERoutes } from '@/routes'
-import { addIceCandidate, createAnswer, createOffer, createPeerConnection } from '@/utils/webrtc'
+import { VerifyResponse } from '@/types/auth.types'
+import {
+  createAnswer,
+  createOffer,
+  createPeerConnection,
+  registerPeerConnectionListeners,
+} from '@/utils/webrtc'
 import { useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate, useOutletContext } from 'react-router'
 
 type Settings = {
   audioEnabled: boolean
@@ -23,16 +28,28 @@ type Client = {
 }
 
 export const Room = () => {
-  const { t } = useTranslation('room')
-  const [clients, setClients] = useState<Client[] | []>([])
   const navigate = useNavigate()
+  const user = useOutletContext<VerifyResponse>()
   const roomId = window.location.pathname.split('rooms/')[1]
+  const [STREAMS, setSTREAMS] = useState<any>([])
 
   const cache = JSON.parse(
     window.localStorage.getItem('echomingle_media_settings') as string,
   ) as Settings
-
+  const remoteRef = useRef<HTMLVideoElement>(null)
   const pc = useRef(createPeerConnection())
+  registerPeerConnectionListeners(pc.current)
+
+  if (pc.current) {
+    pc.current.oniceconnectionstatechange = (e) => {
+      if (pc.current.iceConnectionState === 'connected') {
+        console.log('ICE CONNECTION STATE CHANGE', pc.current.iceConnectionState)
+      }
+      if (pc.current.iceConnectionState === 'disconnected') {
+        console.log('ICE CONNECTION STATE CHANGE', pc.current.iceConnectionState)
+      }
+    }
+  }
 
   useEffect(() => {
     if (!roomId) {
@@ -43,7 +60,7 @@ export const Room = () => {
     return () => {
       socket.disconnect()
     }
-  }, [])
+  }, [roomId])
 
   const { stream, toogle, audioEnabled, videoEnabled, soundEnabled } = useMediaDevice({
     isAutoStart: true,
@@ -55,34 +72,41 @@ export const Room = () => {
     ToastifyRoot.error(data.message)
   })
 
+  socket.on('new_client', (data) => {
+    if (!data.socket_id) return
+    if (!stream) return
+  })
+
   useEffect(() => {
     if (!stream) return
 
-    createOffer(pc.current, stream)
-
-    if (pc.current.localDescription) {
-      socket.emit('offer', {
-        room_id: roomId,
-        offer: pc.current.localDescription,
-      })
-    }
+    createOffer(pc.current, stream).then((offer) => {
+      if (pc.current.localDescription) {
+        socket.emit('offer', {
+          room_id: roomId,
+          offer,
+        })
+      }
+    })
   }, [stream])
 
-  socket.on('answer_to_offer', (data) => {
+  socket.on('answer_to_offer', async (data) => {
     if (!data.answer) return
     if (!stream) return
 
-    createAnswer(pc.current, stream, data.answer)
+    const answer = await createAnswer(pc.current, data.answer)
 
     socket.emit('answer', {
       room_id: roomId,
-      answer: pc.current.localDescription,
+      answer,
     })
   })
 
-  socket.on('server_answer', (data: any) => {
+  socket.on('server_answer', async (data) => {
     if (!data.answer) return
-    pc.current.setRemoteDescription(new RTCSessionDescription(data.answer))
+
+    const remoteDesc = new RTCSessionDescription(data.answer)
+    await pc.current.setRemoteDescription(remoteDesc)
   })
 
   pc.current.onicecandidate = ({ candidate }) => {
@@ -90,29 +114,26 @@ export const Room = () => {
     socket.emit('candidate', { room_id: roomId, candidate })
   }
 
-  socket.on('server_candidate', (data: any) => {
-    if (!data.candidate) return
-    addIceCandidate(pc.current, data.candidate)
+  socket.on('server_candidate', async ({ candidate }) => {
+    if (!candidate) return
+
+    await pc.current.addIceCandidate(candidate)
   })
 
-  pc.current.ontrack = (event) => {
-    const stream = event.streams[0]
-    const client = {
-      id: event.track.id,
-      audioEnabled: true,
-      videoEnabled: true,
-      soundEnabled: true,
-      stream,
+  useEffect(() => {
+    pc.current.ontrack = (event) => {
+      const stream = event.streams[0]
+
+      if (remoteRef.current) {
+        remoteRef.current.srcObject = stream
+      }
+
+      setSTREAMS(() => [stream])
     }
-
-    const copy = [...clients]
-    copy.push(client)
-
-    setClients(() => [...new Set(copy)])
-  }
-
+  }, [STREAMS.length])
+  console.log(STREAMS)
   return (
-    <div className='flex flex-row flex-wrap gap-5 items-start justify-start min-h-screen'>
+    <div className='flex flex-row flex-wrap gap-5 items-start justify-center min-h-screen'>
       <Media
         isAutoStart
         isLocal
@@ -122,20 +143,23 @@ export const Room = () => {
         soundEnabled={soundEnabled}
         stream={stream}
       />
-      {clients.length > 0 &&
-        clients.map((client) => {
-          return (
-            <Media
-              key={client.id}
-              stream={client.stream}
-              audioEnabled={true}
-              videoEnabled={true}
-              soundEnabled={true}
-              isAutoStart
-              isLocal={false}
-            />
-          )
-        })}
+
+      {
+        STREAMS.length > 0 && (
+          // STREAMS.map((stream, i) => {
+          //   return (
+          <Media
+            // key={i}
+            stream={STREAMS[0]}
+            audioEnabled={true}
+            videoEnabled={true}
+            soundEnabled={true}
+            isAutoStart
+            message='REMOTE'
+          />
+        )
+        // )
+      }
     </div>
   )
 }

@@ -5,8 +5,9 @@ export interface ServerToClientEvents {
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
   answer_to_offer: (payload: ServerStream) => void
-  server_candidate: (payload: any) => void
-  server_answer: (payload: any) => void
+  server_candidate: (payload: { candidate: RTCIceCandidateInit }) => void
+  server_answer: (payload: { answer: RTCSessionDescriptionInit }) => void
+  new_client: (payload: { socket_id: string }) => void
 }
 
 export interface ClientToServerEvents {
