@@ -32,6 +32,7 @@ export const Media = ({
 }: MediaDeviceProps) => {
   const ref = useRef<HTMLVideoElement>(null)
   const [Stream, setStream] = useState<MediaStream | null>(null)
+  const mutedRef = useRef(true)
 
   useEffect(() => {
     if (ref.current) {
@@ -51,10 +52,11 @@ export const Media = ({
       }
     }
   }, [stream])
-  let enabled = soundEnabled
+
+  let isMuted = true
 
   if (!isLocal && stream) {
-    enabled = stream?.getAudioTracks()[0].enabled
+    isMuted = false
   }
 
   return (
@@ -64,7 +66,7 @@ export const Media = ({
         height={400}
         autoPlay={true}
         playsInline={true}
-        muted={!enabled}
+        muted={isMuted}
         ref={ref}
         className='rounded-md'
         style={{ transform: 'rotateY(180deg)' }}
