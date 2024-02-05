@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface PaymentButtonProps {
   buttonId: string
@@ -8,22 +9,21 @@ interface PaymentButtonProps {
   expires_at?: Date
 }
 
-const types = {
-  1: 'monthly',
-  12: 'yearly',
-}
-
 export const PaymentButton = ({ buttonId, type, expires_at, paymentId }: PaymentButtonProps) => {
+  const { t } = useTranslation('payment_button')
   const [message, setMessage] = useState({
     title: '',
     expires_at: '',
   })
-
+  const types = {
+    1: t('types.1'),
+    12: t('types.12'),
+  }
   useEffect(() => {
     if (type && expires_at && type === paymentId.toString()) {
       setMessage({
-        title: `You already have a ${types[type]} subscription!`,
-        expires_at: `It expires on ${moment(expires_at).format('DD/MM/YYYY HH:mm')}`,
+        title: `${t('title_1')} ${types[type]} ${t('title_2')}`,
+        expires_at: `${t('expires_at')} ${moment(expires_at).format('DD/MM/YYYY HH:mm')}`,
       })
     }
   }, [type])

@@ -62,7 +62,7 @@ export class AuthService {
 
     let lastSubscription;
 
-    if (user.subscription) {
+    if (user.subscription?.length > 0) {
       lastSubscription = user.subscription.reduce((acc, curr) => {
         if (acc.expires_at < curr.expires_at) {
           return curr;

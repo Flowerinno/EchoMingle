@@ -19,7 +19,13 @@ export const Rooms = () => {
 
   const user = useOutletContext<VerifyResponse>()
   const domain = new URL(window.location.href).origin
+
   const generateRoom = async () => {
+    if (!user?.subscription?.stripe_session_id) {
+      ToastifyRoot.error('Sorry, you need to have a subscription to create a room.')
+      return
+    }
+
     const room = await createRoom(user.email)
 
     if (!room) {

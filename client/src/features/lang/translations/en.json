@@ -50,7 +50,8 @@
     "create": "Create mingle",
     "preview": "Go to preview",
     "copied": "Link copied!",
-    "error": "Failed to create a new mingle. Please try again."
+    "error": "Failed to create a new mingle. Please try again.",
+    "not_sub": "You are not subscribed to EchoMingle. Please choose a plan that suits you best."
   },
   "useCopy": {
     "not_supported": "Copy to clipboard is not supported in your browser. Please copy the link manually.",
@@ -64,5 +65,14 @@
   "plans": {
     "title": "Choose a plan that suits you best!",
     "custom": "For business plans, please contact us directly."
+  },
+  "payment_button": {
+    "types": {
+      "1": "monthly",
+      "12": "yearly"
+    },
+    "title_1": "You already have a ",
+    "title_2": " subscription plan.",
+    "expires_at": "Your subscription plan expires on "
   }
 }

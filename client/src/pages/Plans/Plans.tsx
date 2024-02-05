@@ -33,8 +33,8 @@ export const Plans = () => {
               key={index}
               paymentId={plan.id}
               buttonId={plan.buttonId}
-              type={user?.subscription.type}
-              expires_at={user?.subscription.expires_at}
+              type={user?.subscription?.type}
+              expires_at={user?.subscription?.expires_at}
             />
           )}
         />

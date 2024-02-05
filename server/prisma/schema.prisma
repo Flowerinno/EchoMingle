@@ -17,7 +17,7 @@ model Subscription {
   expires_at        DateTime?
   type              String?
   stripe_session_id String?
-  User              User?      @relation(fields: [user_id], references: [id])
+  User              User?     @relation(fields: [user_id], references: [id])
   user_id           String?
 }
 
