@@ -44,7 +44,7 @@ export class RoomService {
     if (!room) return null;
 
     return {
-      isDeleted: room?.isDeleted,
+      isDeleted: room?.is_deleted,
       room_id: room.id,
     };
   }

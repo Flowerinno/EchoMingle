@@ -46,8 +46,13 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: {
-        email,
         id,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        subscription: true,
       },
     });
 
@@ -55,6 +60,22 @@ export class AuthService {
       return null;
     }
 
-    return { id: user.id, email: user.email, name: user.name };
+    let lastSubscription;
+
+    if (user.subscription) {
+      lastSubscription = user.subscription.reduce((acc, curr) => {
+        if (acc.expires_at < curr.expires_at) {
+          return curr;
+        }
+        return acc;
+      });
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      subscription: lastSubscription,
+    };
   }
 }

@@ -1,7 +1,7 @@
 import { ERoutes } from '@/routes/routes'
 import { Github } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Anchor } from '../modules'
+import { Anchor, Each } from '../modules'
 
 export const Footer = () => {
   const { t } = useTranslation('footer')
@@ -30,9 +30,10 @@ export const Footer = () => {
   return (
     <>
       <ul className='bg-none p-5 flex flex-row gap-5'>
-        {links.map(({ id, label, href }) => (
-          <Anchor key={id} label={label} to={href} />
-        ))}
+        <Each
+          of={links}
+          render={(link, index) => <Anchor key={index} label={link.label} to={link.href} />}
+        />
       </ul>
       <ul className='bg-none p-5 flex flex-row gap-5'>
         <li className='text-white'>© 2024 EchoMingle </li>

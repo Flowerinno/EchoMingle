@@ -26,9 +26,9 @@ export const Plan = ({ title, description, price, isFullWidth, href }: PlanProps
     >
       <div className='flex-1'>
         <h1 className='text-yellow-200 font-bold text-2xl text-center'>{title}</h1>
-        <p className='text-center'>{description}</p>
+        <p className='text-center text-white'>{description}</p>
       </div>
-      <Button className='w-48' label={price} onClick={onClick} />
+      <Button className='w-48 text-white' label={price} onClick={onClick} />
     </div>
   )
 }

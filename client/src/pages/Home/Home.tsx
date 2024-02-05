@@ -1,6 +1,6 @@
 import FirstImage from '@/assets/images/Home/1.png'
 
-import { Button, Plan } from '@/components/modules'
+import { Button, Each, Plan } from '@/components/modules'
 import { ERoutes } from '@/routes'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
@@ -10,7 +10,7 @@ export const Home = () => {
   const navigate = useNavigate()
 
   const onClick = () => {
-    navigate(ERoutes.profile)
+    navigate(ERoutes.rooms)
   }
 
   const mockedPlans = [
@@ -19,21 +19,21 @@ export const Home = () => {
       title: t('section_2.plans.free.title'),
       description: t('section_2.plans.free.description'),
       price: '0$',
-      href: '/plans/checkout/1',
+      href: ERoutes.plans,
     },
     {
       id: 2,
       title: t('section_2.plans.yearly.title'),
       description: t('section_2.plans.yearly.description'),
       price: '29.99$',
-      href: '/plans/checkout/2',
+      href: ERoutes.plans,
     },
     {
       id: 3,
       title: t('section_2.plans.enterprise.title'),
       description: t('section_2.plans.enterprise.description'),
       price: 'Contact us',
-      href: '/plans/checkout/3',
+      href: ERoutes.contact,
     },
   ]
 
@@ -63,9 +63,7 @@ export const Home = () => {
         <h1 className='font-bold text-4xl select-none text-yellow-200'>{t('section_2.title')}</h1>
         <p className='text-2xl w-11/12 md:full font-bold'>{t('subtitle')}</p>
         <div className='flex flex-row flex-wrap justify-around gap-5 w-11/12'>
-          {mockedPlans.map((plan, index) => {
-            return <Plan key={index} {...plan} />
-          })}
+          <Each of={mockedPlans} render={(plan, index) => <Plan key={index} {...plan} />} />
         </div>
       </section>
     </div>

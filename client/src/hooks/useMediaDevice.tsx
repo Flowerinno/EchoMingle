@@ -51,6 +51,10 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDevi
   const toogle = (type: 'Audio' | 'Video' | 'Sound', on: boolean) => {
     if (type === 'Sound') {
       setSoundEnabled(on)
+      const videoElements = document.querySelectorAll('video')
+      videoElements.forEach((video) => {
+        video.muted = on ? false : true
+      })
       return
     }
 

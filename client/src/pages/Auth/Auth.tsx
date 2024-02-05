@@ -7,11 +7,15 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { LogInIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 export const Auth = () => {
   const { t } = useTranslation('auth')
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const room_id = new URLSearchParams(location.search).get('room_id')
+
   const login = useGoogleLogin({
     onSuccess: async (credentialResponse) => {
       const { access_token } = credentialResponse
@@ -21,6 +25,11 @@ export const Auth = () => {
       if (userInfo) {
         ToastifyRoot.success(t('welcome'))
         setToken(userInfo.token)
+        if (room_id) {
+          navigate(`${ERoutes.pending}?room_id=${room_id}`)
+          return
+        }
+
         navigate(ERoutes.profile)
       }
     },

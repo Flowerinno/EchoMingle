@@ -61,6 +61,7 @@ export const Media = ({
   return (
     <div className='flex flex-col gap-10 p-3'>
       <video
+        id={isLocal ? 'local' : 'remote'}
         width={400}
         height={400}
         autoPlay={true}

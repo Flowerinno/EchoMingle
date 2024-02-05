@@ -9,7 +9,7 @@
       "plans": {
         "free": {
           "title": "Free",
-          "description": "The first month of mingling is free!"
+          "description": "The first month of mingling is free! 9.99$ After the trial period."
         },
         "yearly": {
           "title": "Yearly Plan",
@@ -60,5 +60,9 @@
   "pending": {
     "title": "You are about to enter the room!",
     "join": "Join the mingle"
+  },
+  "plans": {
+    "title": "Choose a plan that suits you best!",
+    "custom": "For business plans, please contact us directly."
   }
 }

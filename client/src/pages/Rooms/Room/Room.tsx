@@ -152,6 +152,7 @@ export const Room = () => {
             //   return (
             <Media
               // key={i}
+
               stream={STREAMS[0]}
               audioEnabled={true}
               videoEnabled={true}

@@ -9,4 +9,5 @@ export enum ERoutes {
   rooms = '/rooms',
   pending = '/rooms/pending',
   room = '/rooms/:id',
+  payment = '/payment',
 }
