@@ -7,6 +7,11 @@ const types = {
   plink_1OgCA7EQwGRtgrzo697BLDxI: '12',
 };
 
+const subscriptionDurationInMs = {
+  1: 30 * 24 * 60 * 60 * 1000,
+  12: 365 * 24 * 60 * 60 * 1000,
+};
+
 @Injectable()
 export class StripeService {
   private readonly stripe: Stripe;
@@ -32,11 +37,15 @@ export class StripeService {
         if (existingSubscription) {
           return existingSubscription;
         }
+        const date =
+          subscriptionDurationInMs[types[session.payment_link.toString()]];
+        
+        const expires_at = new Date(Date.now() + date);
 
         const subscription = await this.prisma.subscription.create({
           data: {
             user_id,
-            expires_at: new Date(session.expires_at * 1000),
+            expires_at,
             type: types[session.payment_link.toString()],
             stripe_session_id: session.id,
           },
@@ -45,6 +54,7 @@ export class StripeService {
         return subscription;
       }
     } catch (error) {
+      console.log(error);
       this.logger.error(`Error checking session: ${session_id}`);
     }
   }
