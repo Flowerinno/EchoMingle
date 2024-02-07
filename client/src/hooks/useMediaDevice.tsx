@@ -8,12 +8,11 @@ type Settings = {
 }
 
 interface MediaDeviceProps {
-  STREAM?: MediaStream
   isAutoStart?: boolean
   cache?: Settings
 }
 
-export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDeviceProps) => {
+export const useMediaDevice = ({ isAutoStart = true, cache }: MediaDeviceProps) => {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [isVideoEnabled, setIsVideoEnabled] = useState<boolean | null>(null)
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
@@ -53,7 +52,9 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDevi
       setSoundEnabled(on)
       const videoElements = document.querySelectorAll('video')
       videoElements.forEach((video) => {
-        video.muted = on ? false : true
+        if (video.id === 'remote') {
+          video.muted = on ? false : true
+        }
       })
       return
     }
@@ -67,9 +68,7 @@ export const useMediaDevice = ({ STREAM, isAutoStart = false, cache }: MediaDevi
   }
 
   useEffect(() => {
-    if (isAutoStart && !stream) {
-      start()
-    }
+    start()
 
     return () => {
       stream?.getTracks().forEach((track) => track.stop())

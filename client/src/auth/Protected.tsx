@@ -1,6 +1,6 @@
 import { ERoutes } from '@/routes'
 import { VerifyResponse } from '@/types/auth.types'
-import { verify } from '@/utils'
+import { removeToken, verify } from '@/utils'
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 
@@ -15,6 +15,7 @@ export const Protected = () => {
       const res = await verify()
 
       if (!res) {
+        removeToken()
         navigate(`${ERoutes.auth}?room_id=${room_id}`)
       }
       setUser(res)

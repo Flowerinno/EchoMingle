@@ -1,4 +1,4 @@
-import { MicIcon, MicOff, Video, VideoOff, Volume2, VolumeX } from 'lucide-react'
+import { MicIcon, MicOff, PhoneMissed, Video, VideoOff, Volume2, VolumeX } from 'lucide-react'
 import { useEffect } from 'react'
 
 interface MediaControllerProps {
@@ -6,6 +6,7 @@ interface MediaControllerProps {
   audioEnabled?: boolean
   videoEnabled?: boolean
   soundEnabled?: boolean
+  disconnect?: () => void
 }
 
 const style = 'border border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-14 min-h-8'
@@ -15,6 +16,7 @@ export const MediaController = ({
   audioEnabled,
   videoEnabled,
   soundEnabled,
+  disconnect,
 }: MediaControllerProps) => {
   if (!toogle) {
     return null
@@ -50,6 +52,11 @@ export const MediaController = ({
       {Micro}
       {Sound}
       {Vid}
+      <PhoneMissed
+        onClick={disconnect}
+        aria-label='disconnect'
+        className='text-red-400 border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-14 min-h-8'
+      />
     </div>
   )
 }

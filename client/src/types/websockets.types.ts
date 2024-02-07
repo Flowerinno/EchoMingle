@@ -4,41 +4,57 @@ export interface ServerToClientEvents {
   withAck: (d: string, callback: (e: number) => void) => void
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
-  answer_to_offer: (payload: ServerStream) => void
+  incoming_offer: (payload: ServerStream) => void
   server_candidate: (payload: { candidate: RTCIceCandidateInit }) => void
-  server_answer: (payload: { answer: RTCSessionDescriptionInit }) => void
-  new_client: (payload: { socket_id: string }) => void
+  server_answer: (payload: { answer: RTCSessionDescriptionInit; socket_id: string }) => void
+  new_client: (payload: {
+    connected_client: string
+    name: string
+    user_id: string
+    connected_clients: ConnectedClients[]
+  }) => void
+  client_disconnected: (payload: {
+    name: string
+    user_id: string
+    socket_id: string
+    current_users: any[]
+  }) => void
+  offer_to_empty_room: (payload: { message: string }) => void
 }
 
 export interface ClientToServerEvents {
   createW: (obj: { room_name: string; owner_name: string }) => void
-  connectToRoom: (obj: {
+  connect_to_room: (obj: { room_id: string; user_id: string; name: string }) => void
+  send_offer: (payload: ClientStream) => void
+  answer_to_offer: (payload: {
     room_id: string
-    user_id: string
-    socket_id: string
-    username: string
+    answer: RTCSessionDescriptionInit
+    to: string
   }) => void
-  offer: (payload: ClientStream) => void
-  answer: (payload: any) => void
   candidate: (payload: any) => void
+  disconnect_from_room: (payload: { room_id: string; user_id: string; name: string }) => void
 }
 
 export interface InterServerEvents {
   ping: () => void
 }
 
+interface ConnectedClients {
+  client_id: string
+  name: string
+  id: string
+}
+
 interface ClientStream {
   room_id: string
+  name: string
+  user_id: string
   offer: RTCSessionDescriptionInit
 }
 
 interface ServerStream {
-  id: string
-  room_id: string
-  answer: RTCSessionDescriptionInit
+  offer: RTCSessionDescriptionInit
+  name: string
+  user_id: string
   socket_id: string
-  // stream: MediaStream | null
-  // audioEnabled?: boolean
-  // videoEnabled?: boolean
-  // soundEnabled?: boolean
 }

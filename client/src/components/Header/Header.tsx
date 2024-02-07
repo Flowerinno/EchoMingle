@@ -28,9 +28,9 @@ export const Header = ({ token }: HeaderProps) => {
 
   if (!token) {
     return (
-      <div className='flex flex-row justify-between w-full p-4 items-center'>
+      <div className='flex flex-col gap-4 md:flex-row md:justify-between w-full p-4 items-center'>
         <Logo />
-        <div className='flex-1 flex flex-row gap-5 justify-end'>
+        <div className='md:flex-1 flex justify-center flex-row gap-5 md:justify-end'>
           <Each
             of={notAuthedLinks}
             render={(link, index) => <Anchor key={index} label={link.label} to={link.to} />}

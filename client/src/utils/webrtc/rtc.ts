@@ -1,18 +1,13 @@
 const PC_CONFIG = {
   iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }],
-  canTrickleIceCandidates: true,
 }
+
 export function createPeerConnection() {
   return new RTCPeerConnection(PC_CONFIG)
 }
 
-export async function createOffer(peerConnection: RTCPeerConnection, stream: MediaStream) {
-  stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream))
-
-  const sdp = await peerConnection.createOffer({
-    offerToReceiveAudio: true,
-    offerToReceiveVideo: true,
-  })
+export async function createOffer(peerConnection: RTCPeerConnection) {
+  const sdp = await peerConnection.createOffer()
 
   await peerConnection.setLocalDescription(sdp)
 
@@ -21,7 +16,7 @@ export async function createOffer(peerConnection: RTCPeerConnection, stream: Med
 
 export async function createAnswer(
   peerConnection: RTCPeerConnection,
-  offer: RTCSessionDescriptionInit,
+  offer: RTCSessionDescriptionInit
 ) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
 
@@ -32,21 +27,16 @@ export async function createAnswer(
   return answer
 }
 
-export function registerPeerConnectionListeners(peerConnection: RTCPeerConnection) {
-  peerConnection.addEventListener('icegatheringstatechange', () => {
-    console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`)
+export function addTracks(peerConnection: RTCPeerConnection, stream: MediaStream) {
+  stream.getTracks().forEach((track) => {
+    if (!peerConnection.getSenders().some((sender) => sender.track === track)) {
+      peerConnection.addTrack(track, stream)
+    }
   })
+}
 
+export function registerPeerConnectionListeners(peerConnection: RTCPeerConnection) {
   peerConnection.addEventListener('connectionstatechange', (event) => {
     console.log(`Connection state change: ${peerConnection.connectionState}`)
-  })
-
-  peerConnection.addEventListener('signalingstatechange', () => {
-    console.log(`Signaling state change: ${peerConnection.signalingState}`)
-  })
-
-  peerConnection.addEventListener('iceconnectionstatechange ', (e) => {
-    console.log(e)
-    console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`)
   })
 }

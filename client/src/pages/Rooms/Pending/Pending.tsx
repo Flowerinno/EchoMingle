@@ -23,7 +23,7 @@ export const Pending = () => {
     window.localStorage.getItem('echomingle_media_settings') as string,
   ) as Settings
 
-  const { stream, toogle, soundEnabled, audioEnabled, videoEnabled } = useMediaDevice({
+  const { stream } = useMediaDevice({
     isAutoStart: true,
     cache,
   })
@@ -42,12 +42,7 @@ export const Pending = () => {
     <div className='flex flex-col gap-5 items-center justify-start min-h-screen p-3'>
       <h1 className='text-2xl text-yellow-200 font-bold'>{t('title')}</h1>
       <Media
-        isAutoStart
         isLocal
-        toogle={toogle}
-        soundEnabled={soundEnabled}
-        audioEnabled={audioEnabled}
-        videoEnabled={videoEnabled}
         stream={stream}
       />
       <Button label={t('join')} className='w-8/12' onClick={joinRoom} />
