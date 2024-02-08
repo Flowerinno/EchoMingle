@@ -45,6 +45,14 @@ export class WsService {
           name: connectToRoomDto.name,
           user_id: connectToRoomDto.user_id,
           connected_clients: room.users,
+          adminEmail: room.admin_email,
+        });
+
+        client.emit('joined_room', {
+          room_id: connectToRoomDto.room_id,
+          user_id: connectToRoomDto.user_id,
+          name: connectToRoomDto.name,
+          connected_users: room.users.length,
         });
       }
 
@@ -70,6 +78,13 @@ export class WsService {
         name: connectToRoomDto.name,
         user_id: connectToRoomDto.user_id,
         connected_clients: updatedRoom.users,
+        adminEmail: room.admin_email,
+      });
+
+      client.emit('joined_room', {
+        room_id: connectToRoomDto.room_id,
+        user_id: connectToRoomDto.user_id,
+        name: connectToRoomDto.name,
       });
     } catch (error) {
       server.to(client.id).emit('on_error', {
@@ -88,8 +103,8 @@ export class WsService {
         where: { id: dto.room_id },
         select: { users: { where: { id: dto.user_id } } },
       });
-      console.log('isConnectedToRoom', isConnectedToRoom);
-      if (!isConnectedToRoom) {
+
+      if (isConnectedToRoom.users.length === 0 || !isConnectedToRoom) {
         return;
       }
 
@@ -114,7 +129,7 @@ export class WsService {
         current_users: room.users,
       });
       client.disconnect();
-      
+
       this.logger.log(`Client disconnected: ${client.id}`);
     } catch (error) {
       console.log('DISCONNECT ERROR', error);

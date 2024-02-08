@@ -29,11 +29,9 @@ export class WsGateway {
     client.broadcast.emit('client_disconnect', { socket_id: client.id });
   }
 
-  @SubscribeMessage('connect')
-  async handleConnection(client: Socket) {}
-
   @SubscribeMessage('connect_to_room')
   findOne(client: Socket, connectToRoomDto: ConnectToRoomDto) {
+    this.logger.log('Client CONNECTED ' + client.id);
     this.wsService.connectToRoom(connectToRoomDto, client, this.server);
   }
 
@@ -49,7 +47,6 @@ export class WsGateway {
       socket_id: client.id,
       user_id: payload.user_id,
     });
-    // this.server.to(client.id)
   }
 
   @SubscribeMessage('candidate')
@@ -57,6 +54,7 @@ export class WsGateway {
     client.broadcast.emit('server_candidate', {
       candidate: payload.candidate,
       socket_id: client.id,
+      user_id: payload.user_id,
     });
   }
 
@@ -65,7 +63,6 @@ export class WsGateway {
     client: Socket,
     disconnectFromRoomDto: DisconnectFromRoomDto,
   ) {
-    console.log('DISCONNECT DTO', disconnectFromRoomDto);
     this.wsService.handleDisconnect(disconnectFromRoomDto, client, this.server);
   }
 }

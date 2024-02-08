@@ -41,10 +41,7 @@ export const Pending = () => {
   return (
     <div className='flex flex-col gap-5 items-center justify-start min-h-screen p-3'>
       <h1 className='text-2xl text-yellow-200 font-bold'>{t('title')}</h1>
-      <Media
-        isLocal
-        stream={stream}
-      />
+      <Media isLocal stream={stream} />
       <Button label={t('join')} className='w-8/12' onClick={joinRoom} />
     </div>
   )

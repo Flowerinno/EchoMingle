@@ -5,13 +5,18 @@ export interface ServerToClientEvents {
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
   incoming_offer: (payload: IncomingOffer) => void
-  server_candidate: (payload: { candidate: RTCIceCandidateInit }) => void
-  server_answer: (payload: { answer: RTCSessionDescriptionInit; socket_id: string, user_id: string }) => void
+  server_candidate: (payload: { candidate: RTCIceCandidateInit, user_id: string }) => void
+  server_answer: (payload: {
+    answer: RTCSessionDescriptionInit
+    socket_id: string
+    user_id: string
+  }) => void
   new_client: (payload: {
     connected_client: string
     name: string
     user_id: string
     connected_clients: ConnectedClients[]
+    adminEmail: string
   }) => void
   client_disconnected: (payload: {
     name: string
@@ -20,6 +25,7 @@ export interface ServerToClientEvents {
     current_users: any[]
   }) => void
   offer_to_empty_room: (payload: { message: string }) => void
+  joined_room: (payload: { room_id: string; user_id: string; name: string, connected_users: number }) => void
 }
 
 export interface ClientToServerEvents {
@@ -43,6 +49,7 @@ export interface InterServerEvents {
 interface ConnectedClients {
   client_id: string
   name: string
+  email: string
   id: string
 }
 

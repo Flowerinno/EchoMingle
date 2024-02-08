@@ -6,7 +6,7 @@ import {
   createPeerConnection,
   registerPeerConnectionListeners,
 } from '@/utils/webrtc'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const usePeerConnection = (
   roomId: string,
@@ -14,21 +14,22 @@ export const usePeerConnection = (
   user: {
     user_id: string
     name: string
+    email: string
   },
   localUserId: string,
 ) => {
-  const boundRemoteSocket = useRef<string | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
-
   const pc = useRef(createPeerConnection())
   registerPeerConnectionListeners(pc.current)
+  const isConnected = pc.current.connectionState === 'connected'
 
-  const acceptUserToCall = () => {
+  //user joined the room sends and 'CONNECT_TO_ROOM' event and gets back ON_CONNECT
+  // event which will trigger sendOffer function.
+  const sendOffer = () => {
     if (!localStream) return
 
     createOffer(pc.current).then((offer) => {
       if (offer) {
-        console.log('SENDING OFFER FOR REMOTE ', user.user_id)
+        console.log('STEP 2 - SENDING OFFER FOR REMOTE ', user.user_id)
         socket.emit('send_offer', {
           room_id: roomId,
           name: user.name,
@@ -40,19 +41,30 @@ export const usePeerConnection = (
   }
 
   useEffect(() => {
+    if (pc.current.connectionState === 'failed') {
+      sendOffer()
+    }
+  }, [pc.current.connectionState])
+
+  useEffect(() => {
     if (!pc.current || !localStream) return
 
     addTracks(pc.current, localStream)
 
-    socket.on('offer_to_empty_room', () => {
-      console.log('offer_to_empty_room')
+    socket.on('joined_room', (data) => {
+      if (data.user_id !== localUserId || data.connected_users === 1 || isConnected) {
+        return
+      }
+      console.log('STEP 1 - JOIN THE ROOM', data.user_id + ' ' + data.name)
+      sendOffer()
     })
 
     socket.on('incoming_offer', async ({ offer, user_id, to }) => {
-      console.log('INCOMING OFFER FOR ', user_id, 'MY LOCAL ID ', localUserId)
-      if (!offer) return
-      if (user_id !== localUserId) return
-      console.log('IncomingOffer', offer)
+      if (!offer || user_id !== localUserId) return
+      console.log('STEP - 3 - IncomingOffer from ' + user_id + ' to ' + user.email)
+
+      if (isConnected) return
+
       const answer = await createAnswer(pc.current, offer)
 
       if (!answer) return
@@ -66,7 +78,7 @@ export const usePeerConnection = (
 
     socket.on('server_answer', async ({ answer, user_id }) => {
       if (user_id !== localUserId) return
-      console.log('ServerAnswer', answer)
+      console.log('STEP - 4 - ServerAnswer', answer)
       if (answer) {
         const remoteDesc = new RTCSessionDescription(answer)
         await pc.current.setRemoteDescription(remoteDesc)
@@ -75,23 +87,22 @@ export const usePeerConnection = (
 
     pc.current.onicecandidate = ({ candidate }) => {
       if (candidate) {
-        socket.emit('candidate', { room_id: roomId, candidate })
+        socket.emit('candidate', { room_id: roomId, candidate, user_id: user.user_id })
       }
     }
 
-    socket.on('server_candidate', async ({ candidate }) => {
+    socket.on('server_candidate', async ({ candidate, user_id }) => {
+      if (user_id !== localUserId) return
       if (candidate) {
         await pc.current.addIceCandidate(candidate)
       }
     })
 
-    // socket.on('client_disconnected', ({ socket_id }) => {
-    //   if (socket_id === boundRemoteSocket.current) {
-    //     pc.current.ontrack = null
-    //     pc.current.setLocalDescription(undefined)
-    //     pc.current.restartIce()
-    //   }
-    // })
+    socket.on('client_disconnected', ({ user_id }) => {
+      if (user_id === user.user_id) {
+        console.log('closing connection for ', user_id)
+      }
+    })
 
     return () => {
       socket.off('offer_to_empty_room')
@@ -99,10 +110,8 @@ export const usePeerConnection = (
       socket.off('server_answer')
       socket.off('server_candidate')
       socket.off('client_disconnected')
-      pc.current.onicecandidate = null
-      pc.current.ontrack = null
     }
-  }, [pc.current, localStream])
+  }, [pc.current])
 
-  return { pc: pc.current, acceptUserToCall }
+  return { pc: pc.current, sendOffer }
 }

@@ -18,16 +18,17 @@ type Settings = {
 type Client = {
   user_id: string
   name: string
+  email: string
 }
 
 export const Room = () => {
-  const [isRendered, setIsRendered] = useState(false)
+  const [isConnected, setIsConnected] = useState(false)
   const navigate = useNavigate()
   const localUser = useOutletContext<VerifyResponse>()
   const roomId = window.location.pathname.split('rooms/')[1]
 
   const [peerConnections, setPeerConnections] = useState<Client[] | []>([])
-
+  const [adminEmail, setAdminEmail] = useState('')
   const cache = getItem<Settings>('echomingle_media_settings')
 
   const { stream, toogle, audioEnabled, videoEnabled, soundEnabled } = useMediaDevice({
@@ -41,8 +42,10 @@ export const Room = () => {
       filtered.map((client) => ({
         user_id: client.id,
         name: client.name,
+        email: client.email,
       })) as Client[],
     )
+    setAdminEmail(data.adminEmail)
   })
 
   socket.on('client_disconnected', ({ name, user_id, current_users }) => {
@@ -53,21 +56,14 @@ export const Room = () => {
     if (!roomId) {
       navigate(ERoutes.home)
     }
-
     socket.connect()
-    socket.emit('connect_to_room', { room_id: roomId, user_id: localUser.id, name: localUser.name })
-    setIsRendered(true)
 
-    return () => {
-      if (process.env.NODE_ENV === 'development' && isRendered) {
-        socket.emit('disconnect_from_room', {
-          room_id: roomId,
-          user_id: localUser.id,
-          name: localUser.name,
-        })
-      }
-    }
-  }, [roomId, isRendered])
+    socket.emit('connect_to_room', {
+      room_id: roomId,
+      user_id: localUser.id,
+      name: localUser.name,
+    })
+  }, [roomId])
 
   const disconnect = () => {
     socket.emit('disconnect_from_room', {
@@ -88,8 +84,9 @@ export const Room = () => {
         stream &&
         peerConnections.map((user, i) => (
           <RemoteMedia
+            adminEmail={adminEmail}
             localUserId={localUser?.id}
-            key={i}
+            key={user.user_id}
             localStream={stream}
             roomId={roomId}
             user={user}

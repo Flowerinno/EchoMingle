@@ -1,6 +1,6 @@
+import { ToastifyRoot } from '@/features'
 import { usePeerConnection } from '@/hooks/usePeerConnection'
-import { useRef, useState } from 'react'
-import { Button } from '../modules'
+import { useEffect, useRef, useState } from 'react'
 
 interface RemoteMediaProps {
   roomId: string
@@ -9,15 +9,23 @@ interface RemoteMediaProps {
   user: {
     user_id: string
     name: string
+    email: string
   }
+  adminEmail: string
 }
 
-export const RemoteMedia: React.FC<RemoteMediaProps> = ({ roomId, localStream, user, localUserId }) => {
+export const RemoteMedia: React.FC<RemoteMediaProps> = ({
+  roomId,
+  localStream,
+  user,
+  localUserId,
+  adminEmail,
+}) => {
   const [isShown, setIsShown] = useState(false)
 
   const ref = useRef<HTMLVideoElement>(null)
 
-  const { acceptUserToCall, pc } = usePeerConnection(roomId, localStream, user, localUserId)
+  const { sendOffer, pc } = usePeerConnection(roomId, localStream, user, localUserId)
 
   const handleRemoteStream = (event: RTCTrackEvent) => {
     ref.current && (ref.current.srcObject = event.streams[0])
@@ -25,10 +33,6 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({ roomId, localStream, u
   }
 
   pc.ontrack = handleRemoteStream
-
-  const handleAcceptUserToCall = () => {
-    acceptUserToCall()
-  }
 
   return (
     <div className='flex flex-col gap-10 p-3'>
@@ -43,14 +47,6 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({ roomId, localStream, u
         className='rounded-md max-w-400 max-h-400'
         style={{ transform: 'rotateY(180deg)', display: isShown ? 'block' : 'none' }}
       />
-
-      {!isShown && (
-        <Button
-          label='New user joined. Would you like to see him?'
-          className='border-2 p-2'
-          onClick={handleAcceptUserToCall}
-        />
-      )}
     </div>
   )
 }

@@ -20,7 +20,7 @@ export const Rooms = () => {
 
   const user = useOutletContext<VerifyResponse>()
   const domain = new URL(window.location.href).origin
-  
+
   const generateRoom = async () => {
     if (!user?.subscription?.stripe_session_id) {
       ToastifyRoot.error('Sorry, you need to have a subscription to create a room.')
@@ -42,7 +42,6 @@ export const Rooms = () => {
     navigate(`/rooms/pending?room_id=${roomId}`)
   }
 
-  console.log(user)
   useEffect(() => {
     if (!user) {
       navigate(ERoutes.home)
@@ -64,21 +63,22 @@ export const Rooms = () => {
   }, [])
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-start'>
+    <div className='min-h-screen min-w-0 w-11/12 flex flex-col flex-wrap items-center justify-start'>
       <h2 className='text-2xl font-bold text-yellow-200 text-center p-2'>{t('title')}</h2>
-      <div className='flex flex-row gap-10 p-2 w-full'>
+      <div className='flex flex-row gap-10 p-2 w-11/12'>
         {!roomLink && <Button label={t('create')} onClick={generateRoom} className='w-full' />}
         {roomLink && (
-          <div className='flex flex-row flex-wrap gap-5'>
+          <div className='flex flex-row flex-wrap items-center justify-center gap-5 min-w-0'>
             <Button label={t('preview')} onClick={handleNavigate} className='w-full' />
-            <button
-              className='border-2 p-2 rounded-md border-yellow-200 text-white flex flex-row gap-2 w-full text-center items-center justify-center'
-              value={roomLink}
-              onClick={(e) => handleCopy(e?.currentTarget?.value)}
+            <div
+              className='border-2 p-2 rounded-md border-yellow-200 text-white flex flex-row text-balance text-clip gap-4 w-full text-center items-center justify-center cursor-pointer'
+              onClick={(e) => handleCopy(roomLink)}
             >
-              {roomLink}
+              <span className='truncate text-center text-ellipsis w-8/12 max-w-8/12'>
+                {roomLink}
+              </span>
               {isCopied ? <CopyCheckIcon /> : <Copy />}
-            </button>
+            </div>
           </div>
         )}
       </div>

@@ -8,7 +8,6 @@ export function createPeerConnection() {
 
 export async function createOffer(peerConnection: RTCPeerConnection) {
   const sdp = await peerConnection.createOffer()
-
   await peerConnection.setLocalDescription(sdp)
 
   return sdp
@@ -16,12 +15,11 @@ export async function createOffer(peerConnection: RTCPeerConnection) {
 
 export async function createAnswer(
   peerConnection: RTCPeerConnection,
-  offer: RTCSessionDescriptionInit
+  offer: RTCSessionDescriptionInit,
 ) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
 
   const answer = await peerConnection.createAnswer()
-
   await peerConnection.setLocalDescription(answer)
 
   return answer
