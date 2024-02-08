@@ -50,7 +50,7 @@ export const MediaController = ({
   return (
     <div className='flex flex-flow gap-5 justify-center w-full'>
       {Micro}
-      {Sound}
+      {/* {Sound} */}
       {Vid}
       <PhoneMissed
         onClick={disconnect}

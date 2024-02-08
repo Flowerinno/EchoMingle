@@ -21,8 +21,9 @@ type Client = {
 }
 
 export const Room = () => {
+  const [isRendered, setIsRendered] = useState(false)
   const navigate = useNavigate()
-  const user = useOutletContext<VerifyResponse>()
+  const localUser = useOutletContext<VerifyResponse>()
   const roomId = window.location.pathname.split('rooms/')[1]
 
   const [peerConnections, setPeerConnections] = useState<Client[] | []>([])
@@ -35,9 +36,12 @@ export const Room = () => {
   })
 
   socket.on('new_client', (data) => {
-    const filtered = data.connected_clients.filter((client) => client.id !== user.id)
+    const filtered = data.connected_clients.filter((client) => client.id !== localUser.id)
     setPeerConnections(
-      filtered.map((client) => ({ user_id: client.id, name: client.name })) as Client[],
+      filtered.map((client) => ({
+        user_id: client.id,
+        name: client.name,
+      })) as Client[],
     )
   })
 
@@ -51,14 +55,26 @@ export const Room = () => {
     }
 
     socket.connect()
-    socket.emit('connect_to_room', { room_id: roomId, user_id: user.id, name: user.name })
-  }, [roomId])
+    socket.emit('connect_to_room', { room_id: roomId, user_id: localUser.id, name: localUser.name })
+    setIsRendered(true)
+
+    return () => {
+      if (process.env.NODE_ENV === 'development' && isRendered) {
+        socket.emit('disconnect_from_room', {
+          room_id: roomId,
+          user_id: localUser.id,
+          name: localUser.name,
+        })
+      }
+    }
+  }, [roomId, isRendered])
 
   const disconnect = () => {
-    socket.off('new_client')
-    socket.emit('disconnect_from_room', { room_id: roomId, user_id: user.id, name: user.name })
-    socket.disconnect()
-    setPeerConnections([])
+    socket.emit('disconnect_from_room', {
+      room_id: roomId,
+      user_id: localUser.id,
+      name: localUser.name,
+    })
     navigate(ERoutes.home)
   }
 
@@ -71,7 +87,13 @@ export const Room = () => {
       {peerConnections?.length > 0 &&
         stream &&
         peerConnections.map((user, i) => (
-          <RemoteMedia key={i} localStream={stream} roomId={roomId} user={user} />
+          <RemoteMedia
+            localUserId={localUser?.id}
+            key={i}
+            localStream={stream}
+            roomId={roomId}
+            user={user}
+          />
         ))}
       <div>
         <MediaController

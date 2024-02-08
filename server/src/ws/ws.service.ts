@@ -88,7 +88,7 @@ export class WsService {
         where: { id: dto.room_id },
         select: { users: { where: { id: dto.user_id } } },
       });
-
+      console.log('isConnectedToRoom', isConnectedToRoom);
       if (!isConnectedToRoom) {
         return;
       }
@@ -113,9 +113,11 @@ export class WsService {
         socket_id: client.id,
         current_users: room.users,
       });
-
+      client.disconnect();
+      
       this.logger.log(`Client disconnected: ${client.id}`);
     } catch (error) {
+      console.log('DISCONNECT ERROR', error);
       server.to(client.id).emit('on_error', {
         message: 'An error occurred while disconnecting from the room',
       });
@@ -148,7 +150,7 @@ export class WsService {
       }
 
       client.broadcast.emit('incoming_offer', {
-        socket_id: client.id,
+        to: client.id,
         offer: payload.offer,
         user_id: payload.user_id,
         name: payload.name,

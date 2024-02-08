@@ -1,9 +1,12 @@
-export type GoogleLoginResponse = {
-  id: string
-  email: string
-  name: string
-  token: string
-} | null
+export type AuthResponse = User
+
+type User = {
+  id?: string
+  email?: string
+  name?: string
+  token?: string
+  message: string
+}
 
 export type Subscription = {
   id: string

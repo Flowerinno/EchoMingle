@@ -4,9 +4,9 @@ export interface ServerToClientEvents {
   withAck: (d: string, callback: (e: number) => void) => void
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
-  incoming_offer: (payload: ServerStream) => void
+  incoming_offer: (payload: IncomingOffer) => void
   server_candidate: (payload: { candidate: RTCIceCandidateInit }) => void
-  server_answer: (payload: { answer: RTCSessionDescriptionInit; socket_id: string }) => void
+  server_answer: (payload: { answer: RTCSessionDescriptionInit; socket_id: string, user_id: string }) => void
   new_client: (payload: {
     connected_client: string
     name: string
@@ -25,11 +25,12 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   createW: (obj: { room_name: string; owner_name: string }) => void
   connect_to_room: (obj: { room_id: string; user_id: string; name: string }) => void
-  send_offer: (payload: ClientStream) => void
+  send_offer: (payload: SendOffer) => void
   answer_to_offer: (payload: {
     room_id: string
-    answer: RTCSessionDescriptionInit
+    user_id: string
     to: string
+    answer: RTCSessionDescriptionInit
   }) => void
   candidate: (payload: any) => void
   disconnect_from_room: (payload: { room_id: string; user_id: string; name: string }) => void
@@ -45,16 +46,16 @@ interface ConnectedClients {
   id: string
 }
 
-interface ClientStream {
+interface SendOffer {
   room_id: string
   name: string
   user_id: string
   offer: RTCSessionDescriptionInit
 }
 
-interface ServerStream {
+interface IncomingOffer {
   offer: RTCSessionDescriptionInit
   name: string
   user_id: string
-  socket_id: string
+  to: string
 }

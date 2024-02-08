@@ -5,18 +5,19 @@ import { Button } from '../modules'
 interface RemoteMediaProps {
   roomId: string
   localStream: MediaStream
+  localUserId: string
   user: {
     user_id: string
     name: string
   }
 }
 
-export const RemoteMedia: React.FC<RemoteMediaProps> = ({ roomId, localStream, user }) => {
+export const RemoteMedia: React.FC<RemoteMediaProps> = ({ roomId, localStream, user, localUserId }) => {
   const [isShown, setIsShown] = useState(false)
 
   const ref = useRef<HTMLVideoElement>(null)
 
-  const { acceptUserToCall, pc } = usePeerConnection(roomId, localStream, user)
+  const { acceptUserToCall, pc } = usePeerConnection(roomId, localStream, user, localUserId)
 
   const handleRemoteStream = (event: RTCTrackEvent) => {
     ref.current && (ref.current.srcObject = event.streams[0])

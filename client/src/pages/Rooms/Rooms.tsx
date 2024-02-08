@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/api/api'
 import { ToastifyRoot } from '@/features'
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard'
+import { ERoutes } from '@/routes'
 import { VerifyResponse } from '@/types/auth.types'
 import { createRoom, getRoomLink } from '@/utils/room'
 import { Copy, CopyCheckIcon } from 'lucide-react'
@@ -19,7 +20,7 @@ export const Rooms = () => {
 
   const user = useOutletContext<VerifyResponse>()
   const domain = new URL(window.location.href).origin
-
+  
   const generateRoom = async () => {
     if (!user?.subscription?.stripe_session_id) {
       ToastifyRoot.error('Sorry, you need to have a subscription to create a room.')
@@ -41,16 +42,24 @@ export const Rooms = () => {
     navigate(`/rooms/pending?room_id=${roomId}`)
   }
 
+  console.log(user)
   useEffect(() => {
+    if (!user) {
+      navigate(ERoutes.home)
+    }
+
     const roomId = getRoomLink()
 
     if (roomId) {
-      api.get(`/room/${roomId}`).then(({ data }) => {
-        if (!data?.room_id) return
+      api
+        .get(`/room/${roomId}`)
+        .then(({ data }) => {
+          if (!data?.room_id) return
 
-        setRoomId(data?.room_id)
-        setRoomLink(domain + `/rooms/pending?room_id=${data?.room_id}`)
-      })
+          setRoomId(data?.room_id)
+          setRoomLink(domain + `/rooms/pending?room_id=${data?.room_id}`)
+        })
+        .catch((_) => ToastifyRoot.error(t('error')))
     }
   }, [])
 

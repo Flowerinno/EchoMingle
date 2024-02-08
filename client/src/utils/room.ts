@@ -1,5 +1,4 @@
 import { api } from '@/api/api'
-import { config } from '@/config/env.config'
 import Cookies from 'js-cookie'
 
 export const createRoom = async (
@@ -13,7 +12,8 @@ export const createRoom = async (
     return null
   }
 
-  const link = `${config.origin_url}/rooms/pending?room_id=${data?.room_id}`
+  const domain = new URL(window.location.href).origin
+  const link = `${domain}/rooms/pending?room_id=${data?.room_id}`
 
   setRoomLink(data.room_id)
 

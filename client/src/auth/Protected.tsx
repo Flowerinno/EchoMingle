@@ -1,3 +1,4 @@
+import { ToastifyRoot } from '@/features'
 import { ERoutes } from '@/routes'
 import { VerifyResponse } from '@/types/auth.types'
 import { removeToken, verify } from '@/utils'
@@ -12,13 +13,20 @@ export const Protected = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await verify()
+      try {
+        const res = await verify()
 
-      if (!res) {
-        removeToken()
-        navigate(`${ERoutes.auth}?room_id=${room_id}`)
+        if (!res) {
+          removeToken()
+          if (room_id) {
+            navigate(`${ERoutes.auth}?room_id=${room_id}`)
+          }
+          navigate(ERoutes.auth)
+        }
+        setUser(res)
+      } catch (error) {
+        ToastifyRoot.error('Whoops...')
       }
-      setUser(res)
     }
 
     fetch()

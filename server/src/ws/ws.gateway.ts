@@ -12,8 +12,6 @@ import {
 } from './dto/connect-to-room.dto';
 import { WsService } from './ws.service';
 
-const clients = [];
-
 @WebSocketGateway({
   cors: { origin: '*' },
   namespace: 'ws',
@@ -49,6 +47,7 @@ export class WsGateway {
     client.to(payload.to).emit('server_answer', {
       answer: payload.answer,
       socket_id: client.id,
+      user_id: payload.user_id,
     });
     // this.server.to(client.id)
   }
@@ -66,6 +65,7 @@ export class WsGateway {
     client: Socket,
     disconnectFromRoomDto: DisconnectFromRoomDto,
   ) {
+    console.log('DISCONNECT DTO', disconnectFromRoomDto);
     this.wsService.handleDisconnect(disconnectFromRoomDto, client, this.server);
   }
 }

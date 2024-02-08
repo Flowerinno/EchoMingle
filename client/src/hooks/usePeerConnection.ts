@@ -6,7 +6,7 @@ import {
   createPeerConnection,
   registerPeerConnectionListeners,
 } from '@/utils/webrtc'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const usePeerConnection = (
   roomId: string,
@@ -15,8 +15,10 @@ export const usePeerConnection = (
     user_id: string
     name: string
   },
+  localUserId: string,
 ) => {
   const boundRemoteSocket = useRef<string | null>(null)
+  const [isConnected, setIsConnected] = useState(false)
 
   const pc = useRef(createPeerConnection())
   registerPeerConnectionListeners(pc.current)
@@ -26,6 +28,7 @@ export const usePeerConnection = (
 
     createOffer(pc.current).then((offer) => {
       if (offer) {
+        console.log('SENDING OFFER FOR REMOTE ', user.user_id)
         socket.emit('send_offer', {
           room_id: roomId,
           name: user.name,
@@ -45,22 +48,26 @@ export const usePeerConnection = (
       console.log('offer_to_empty_room')
     })
 
-    socket.on('incoming_offer', async ({ offer, socket_id }) => {
+    socket.on('incoming_offer', async ({ offer, user_id, to }) => {
+      console.log('INCOMING OFFER FOR ', user_id, 'MY LOCAL ID ', localUserId)
       if (!offer) return
-
+      if (user_id !== localUserId) return
+      console.log('IncomingOffer', offer)
       const answer = await createAnswer(pc.current, offer)
 
       if (!answer) return
       socket.emit('answer_to_offer', {
         room_id: roomId,
         answer,
-        to: socket_id,
+        to,
+        user_id: user.user_id,
       })
     })
 
-    socket.on('server_answer', async ({ answer, socket_id }) => {
+    socket.on('server_answer', async ({ answer, user_id }) => {
+      if (user_id !== localUserId) return
+      console.log('ServerAnswer', answer)
       if (answer) {
-        boundRemoteSocket.current = socket_id
         const remoteDesc = new RTCSessionDescription(answer)
         await pc.current.setRemoteDescription(remoteDesc)
       }
@@ -78,13 +85,13 @@ export const usePeerConnection = (
       }
     })
 
-    socket.on('client_disconnected', ({ socket_id }) => {
-      if (socket_id === boundRemoteSocket.current) {
-        pc.current.ontrack = null
-        pc.current.setLocalDescription(undefined)
-        pc.current.restartIce()
-      }
-    })
+    // socket.on('client_disconnected', ({ socket_id }) => {
+    //   if (socket_id === boundRemoteSocket.current) {
+    //     pc.current.ontrack = null
+    //     pc.current.setLocalDescription(undefined)
+    //     pc.current.restartIce()
+    //   }
+    // })
 
     return () => {
       socket.off('offer_to_empty_room')

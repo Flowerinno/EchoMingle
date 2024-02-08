@@ -14,4 +14,14 @@ export class AuthController {
   async me(@Param('token') token: string) {
     return this.authService.verifyToken(token);
   }
+
+  @Post('register')
+  async register(@Body() body: { name: string; email: string }) {
+    return this.authService.register(body);
+  }
+
+  @Post('login')
+  async login(@Body() body: { email: string }) {
+    return this.authService.login(body);
+  }
 }

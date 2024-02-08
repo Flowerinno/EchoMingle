@@ -39,6 +39,61 @@ export class AuthService {
     return { id: user.id, email: user.email, name: user.name, token };
   }
 
+  async login(body: { email: string }) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email: body.email,
+        },
+      });
+
+      if (!user) {
+        return { message: 'User not found' };
+      }
+
+      const token = generateToken(user?.email, user?.id);
+
+      return { id: user.id, email: user.email, name: user.name, token };
+    } catch (error) {
+      return { message: 'Error logging in' };
+    }
+  }
+
+  async register(body: { name: string; email: string }) {
+    try {
+      const isExists = await this.prisma.user.findUnique({
+        where: {
+          email: body.email,
+        },
+      });
+
+      if (isExists) {
+        return { message: 'User with such email already exists' };
+      }
+
+      const user = await this.prisma.user.create({
+        data: {
+          email: body.email,
+          name: body.name,
+        },
+      });
+
+      const token = generateToken(user?.email, user?.id);
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        token,
+        message: 'User registered',
+      };
+    } catch (error) {
+      return {
+        message: 'Error registering user',
+      };
+    }
+  }
+
   async verifyToken(token: string) {
     const [email, id] = Buffer.from(token, 'base64').toString()?.split('_');
 
