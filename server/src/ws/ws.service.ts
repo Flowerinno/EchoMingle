@@ -48,7 +48,7 @@ export class WsService {
           adminEmail: room.admin_email,
         });
 
-        client.emit('joined_room', {
+        server.emit('joined_room', {
           room_id: connectToRoomDto.room_id,
           user_id: connectToRoomDto.user_id,
           name: connectToRoomDto.name,
@@ -81,7 +81,7 @@ export class WsService {
         adminEmail: room.admin_email,
       });
 
-      client.emit('joined_room', {
+      server.emit('joined_room', {
         room_id: connectToRoomDto.room_id,
         user_id: connectToRoomDto.user_id,
         name: connectToRoomDto.name,
@@ -101,12 +101,16 @@ export class WsService {
     try {
       const isConnectedToRoom = await this.prisma.room.findUnique({
         where: { id: dto.room_id },
-        select: { users: { where: { id: dto.user_id } } },
+        select: { users: { where: { id: dto.user_id } }, admin_email: true },
       });
 
       if (isConnectedToRoom.users.length === 0 || !isConnectedToRoom) {
         return;
       }
+
+      const admin = isConnectedToRoom?.users?.find((user) => {
+        return user?.email === isConnectedToRoom?.admin_email;
+      });
 
       const room = await this.prisma.room.update({
         where: { id: dto.room_id },
@@ -119,8 +123,20 @@ export class WsService {
         },
         select: {
           users: true,
+          admin_email: true,
         },
       });
+
+      if (admin?.id === dto?.user_id) {
+        server.emit('admin_disconnected');
+        this.prisma.room.update({
+          where: { id: dto.room_id },
+          data: {
+            is_deleted: true,
+          },
+        });
+        return;
+      }
 
       server.emit('client_disconnected', {
         name: dto.name,
@@ -128,6 +144,7 @@ export class WsService {
         socket_id: client.id,
         current_users: room.users,
       });
+
       client.disconnect();
 
       this.logger.log(`Client disconnected: ${client.id}`);

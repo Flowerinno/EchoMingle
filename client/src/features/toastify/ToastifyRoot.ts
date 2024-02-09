@@ -2,14 +2,19 @@ import { toast } from 'react-toastify'
 
 import 'react-toastify/dist/ReactToastify.css'
 
-export enum E_Toastify {
+enum E_Toastify {
   success = 'success',
   error = 'error',
 }
 
 const position = 'bottom-right'
 
-export const ToastifyRoot = {
+type ToastifyRootType = {
+  [E_Toastify.success]: (text: string) => void
+  [E_Toastify.error]: (text: string) => void
+}
+
+export const ToastifyRoot: ToastifyRootType = {
   [E_Toastify.success]: (text: string) => {
     return toast.success(text, {
       position,

@@ -6,7 +6,7 @@ import {
   createPeerConnection,
   registerPeerConnectionListeners,
 } from '@/utils/webrtc'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const usePeerConnection = (
   roomId: string,
@@ -17,71 +17,84 @@ export const usePeerConnection = (
     email: string
   },
   localUserId: string,
+  adminEmail: string,
+  localEmail: string,
 ) => {
-  const pc = useRef(createPeerConnection())
-  registerPeerConnectionListeners(pc.current)
-  const isConnected = pc.current.connectionState === 'connected'
+  const [isOfferSent, setIsOfferSent] = useState(false)
+  const pc = useRef<RTCPeerConnection>(createPeerConnection())
+
+  if (pc.current !== null) {
+    registerPeerConnectionListeners(pc.current)
+  }
+  const isConnected = pc?.current?.connectionState === 'connected'
 
   //user joined the room sends and 'CONNECT_TO_ROOM' event and gets back ON_CONNECT
   // event which will trigger sendOffer function.
-  const sendOffer = () => {
-    if (!localStream) return
-
-    createOffer(pc.current).then((offer) => {
-      if (offer) {
-        console.log('STEP 2 - SENDING OFFER FOR REMOTE ', user.user_id)
-        socket.emit('send_offer', {
-          room_id: roomId,
-          name: user.name,
-          user_id: user.user_id,
-          offer,
+  const sendOffer = async () => {
+    try {
+      if (adminEmail === localEmail && !isOfferSent) {
+        console.log('STEP 2 - CREATE OFFER ON RENDER IF ADMIN')
+        createOffer(pc.current).then((offer) => {
+          console.log('STEP 3 - SENDING OFFER FOR REMOTE ', user.user_id)
+          socket.emit('send_offer', {
+            room_id: roomId,
+            name: user.name,
+            user_id: user.user_id,
+            offer,
+          })
+          setIsOfferSent(true)
         })
       }
-    })
-  }
-
-  useEffect(() => {
-    if (pc.current.connectionState === 'failed') {
-      sendOffer()
+    } catch (error) {
+      console.log('IN STEP 2', error)
     }
-  }, [pc.current.connectionState])
+  }
 
   useEffect(() => {
     if (!pc.current || !localStream) return
 
     addTracks(pc.current, localStream)
 
-    socket.on('joined_room', (data) => {
-      if (data.user_id !== localUserId || data.connected_users === 1 || isConnected) {
-        return
+    socket.on('new_client', (data) => {
+      if (data?.adminEmail !== localEmail || data.user_id === localUserId) {
+        return //only admin is initiating the call
       }
-      console.log('STEP 1 - JOIN THE ROOM', data.user_id + ' ' + data.name)
+      console.log('STEP 1 - USER JOINED THE ROOM', data.user_id + ' ' + data.name)
       sendOffer()
+      setIsOfferSent(true)
     })
 
     socket.on('incoming_offer', async ({ offer, user_id, to }) => {
+      console.log('STEP 4 - IncomingOffer from ' + user_id + ' to ' + user.email)
       if (!offer || user_id !== localUserId) return
-      console.log('STEP - 3 - IncomingOffer from ' + user_id + ' to ' + user.email)
 
-      if (isConnected) return
+      if (isConnected || !pc.current) return
 
-      const answer = await createAnswer(pc.current, offer)
+      try {
+        const answer = await createAnswer(pc.current, offer)
 
-      if (!answer) return
-      socket.emit('answer_to_offer', {
-        room_id: roomId,
-        answer,
-        to,
-        user_id: user.user_id,
-      })
+        if (!answer) return
+        socket.emit('answer_to_offer', {
+          room_id: roomId,
+          answer,
+          to,
+          user_id: user.user_id,
+        })
+      } catch (error) {
+        console.log(error)
+      }
     })
 
     socket.on('server_answer', async ({ answer, user_id }) => {
       if (user_id !== localUserId) return
-      console.log('STEP - 4 - ServerAnswer', answer)
-      if (answer) {
-        const remoteDesc = new RTCSessionDescription(answer)
-        await pc.current.setRemoteDescription(remoteDesc)
+      console.log('STEP 5 - ServerAnswer', answer)
+      if (answer && pc?.current) {
+        try {
+          const remoteDesc = new RTCSessionDescription(answer)
+          await pc.current.setRemoteDescription(remoteDesc)
+        } catch (error) {
+          pc.current.restartIce()
+        }
       }
     })
 
@@ -93,24 +106,17 @@ export const usePeerConnection = (
 
     socket.on('server_candidate', async ({ candidate, user_id }) => {
       if (user_id !== localUserId) return
-      if (candidate) {
+      if (candidate && pc?.current) {
         await pc.current.addIceCandidate(candidate)
       }
     })
 
     socket.on('client_disconnected', ({ user_id }) => {
       if (user_id === user.user_id) {
-        console.log('closing connection for ', user_id)
+        //@ts-expect-error
+        pc.current = null
       }
     })
-
-    return () => {
-      socket.off('offer_to_empty_room')
-      socket.off('incoming_offer')
-      socket.off('server_answer')
-      socket.off('server_candidate')
-      socket.off('client_disconnected')
-    }
   }, [pc.current])
 
   return { pc: pc.current, sendOffer }

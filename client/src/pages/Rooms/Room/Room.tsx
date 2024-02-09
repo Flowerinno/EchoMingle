@@ -6,6 +6,7 @@ import { socket } from '@/lib/ws'
 import { ERoutes } from '@/routes'
 import { VerifyResponse } from '@/types/auth.types'
 import { getItem } from '@/utils/index'
+import { removeRoomLink } from '@/utils/room'
 import { useEffect, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router'
 
@@ -22,7 +23,6 @@ type Client = {
 }
 
 export const Room = () => {
-  const [isConnected, setIsConnected] = useState(false)
   const navigate = useNavigate()
   const localUser = useOutletContext<VerifyResponse>()
   const roomId = window.location.pathname.split('rooms/')[1]
@@ -52,6 +52,15 @@ export const Room = () => {
     setPeerConnections((prev) => prev.filter((user) => user.user_id !== user_id))
   })
 
+  socket.on('admin_disconnected', () => {
+    socket.close()
+    removeRoomLink()
+    navigate(ERoutes.rooms, {
+      replace: true,
+      state: { isAdminDisconnected: true },
+    })
+  })
+
   useEffect(() => {
     if (!roomId) {
       navigate(ERoutes.home)
@@ -75,23 +84,24 @@ export const Room = () => {
   }
 
   return (
-    <div className='flex flex-col gap-5 items-center justify-start min-h-screen'>
-      <div className='flex flex-row flex-wrap gap-5 items-start justify-center'>
+    <div className='flex flex-col gap-10 items-center justify-start w-full'>
+      <div className='flex flex-row flex-wrap gap-5 items-start justify-center p-4'>
         <Media isLocal stream={stream} />
+        {peerConnections?.length > 0 &&
+          stream &&
+          peerConnections.map((user) => (
+            <RemoteMedia
+              key={user.user_id}
+              adminEmail={adminEmail}
+              localUserId={localUser?.id}
+              localStream={stream}
+              localEmail={localUser?.email}
+              roomId={roomId}
+              user={user}
+            />
+          ))}
       </div>
 
-      {peerConnections?.length > 0 &&
-        stream &&
-        peerConnections.map((user, i) => (
-          <RemoteMedia
-            adminEmail={adminEmail}
-            localUserId={localUser?.id}
-            key={user.user_id}
-            localStream={stream}
-            roomId={roomId}
-            user={user}
-          />
-        ))}
       <div>
         <MediaController
           disconnect={disconnect}

@@ -5,7 +5,7 @@ export interface ServerToClientEvents {
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
   incoming_offer: (payload: IncomingOffer) => void
-  server_candidate: (payload: { candidate: RTCIceCandidateInit, user_id: string }) => void
+  server_candidate: (payload: { candidate: RTCIceCandidateInit; user_id: string }) => void
   server_answer: (payload: {
     answer: RTCSessionDescriptionInit
     socket_id: string
@@ -24,8 +24,14 @@ export interface ServerToClientEvents {
     socket_id: string
     current_users: any[]
   }) => void
+  admin_disconnected: () => void
   offer_to_empty_room: (payload: { message: string }) => void
-  joined_room: (payload: { room_id: string; user_id: string; name: string, connected_users: number }) => void
+  joined_room: (payload: {
+    room_id: string
+    user_id: string
+    name: string
+    connected_users: number
+  }) => void
 }
 
 export interface ClientToServerEvents {

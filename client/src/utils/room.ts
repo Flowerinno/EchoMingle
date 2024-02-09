@@ -20,6 +20,10 @@ export const createRoom = async (
   return { link, room_id: data?.room_id }
 }
 
+export const removeRoomLink = () => {
+  Cookies.remove('echomingle_room')
+}
+
 export const setRoomLink = (room_id: string) => {
   Cookies.set('echomingle_room', room_id, {
     expires: 1 / 48, //30minutes
@@ -28,4 +32,12 @@ export const setRoomLink = (room_id: string) => {
 
 export const getRoomLink = () => {
   return Cookies.get('echomingle_room')
+}
+
+export const getRoomById = async (room_id: string, userEmail: string) => {
+  const { data } = await api.get(`/room/${room_id}/${userEmail}`)
+
+  if (!data?.room_id) return null
+
+  return data
 }

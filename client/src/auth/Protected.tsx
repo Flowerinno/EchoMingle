@@ -15,11 +15,11 @@ export const Protected = () => {
     const fetch = async () => {
       try {
         const res = await verify()
-
-        if (!res) {
+        if (!res?.id) {
           removeToken()
           if (room_id) {
             navigate(`${ERoutes.auth}?room_id=${room_id}`)
+            return
           }
           navigate(ERoutes.auth)
         }

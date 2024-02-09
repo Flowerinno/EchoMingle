@@ -1,10 +1,13 @@
 import { Media } from '@/components'
 import { Button } from '@/components/modules'
+import { ToastifyRoot } from '@/features'
 import { useMediaDevice } from '@/hooks/useMediaDevice'
 import { ERoutes } from '@/routes'
+import { VerifyResponse } from '@/types/auth.types'
+import { getRoomById } from '@/utils/room'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate, useOutletContext } from 'react-router'
 import { useSearchParams } from 'react-router-dom'
 
 type Settings = {
@@ -19,6 +22,8 @@ export const Pending = () => {
   const [params] = useSearchParams()
   const roomId = params.get('room_id')
 
+  const user = useOutletContext<VerifyResponse>()
+
   const cache = JSON.parse(
     window.localStorage.getItem('echomingle_media_settings') as string,
   ) as Settings
@@ -28,7 +33,25 @@ export const Pending = () => {
     cache,
   })
 
-  const joinRoom = () => {
+  const joinRoom = async () => {
+    if (!roomId || !user?.email) return
+    const roomInfo = await getRoomById(roomId, user?.email)
+
+    if (!roomInfo) {
+      return
+    }
+
+    if (roomInfo.isDeleted) {
+      ToastifyRoot.error('The room has been deleted.')
+      navigate(ERoutes.home)
+      return
+    }
+
+    if (!roomInfo.isAdminConnected) {
+      ToastifyRoot.error('The room admin is not connected.')
+      return
+    }
+
     navigate(`/rooms/${roomId}`)
   }
 

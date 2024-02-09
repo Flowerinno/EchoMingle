@@ -9,10 +9,13 @@ import { VerifyResponse } from '@/types/auth.types'
 import { createRoom, getRoomLink } from '@/utils/room'
 import { Copy, CopyCheckIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useOutletContext } from 'react-router'
+import { useLocation, useNavigate, useOutletContext } from 'react-router'
 
 export const Rooms = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { state } = location
+
   const { t } = useTranslation('rooms')
   const [isCopied, handleCopy] = useCopyToClipboard()
   const [roomId, setRoomId] = useState('')
@@ -46,13 +49,17 @@ export const Rooms = () => {
     if (!user) {
       navigate(ERoutes.home)
     }
+    if (state?.isAdminDisconnected) {
+      ToastifyRoot.error('Admin has left the room')
+    }
 
     const roomId = getRoomLink()
 
     if (roomId) {
       api
-        .get(`/room/${roomId}`)
+        .get(`/room/${roomId}/${user.email}`)
         .then(({ data }) => {
+          console.log(data)
           if (!data?.room_id) return
 
           setRoomId(data?.room_id)

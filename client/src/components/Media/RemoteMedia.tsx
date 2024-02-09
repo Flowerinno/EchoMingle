@@ -1,11 +1,11 @@
-import { ToastifyRoot } from '@/features'
 import { usePeerConnection } from '@/hooks/usePeerConnection'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 interface RemoteMediaProps {
   roomId: string
   localStream: MediaStream
   localUserId: string
+  localEmail: string
   user: {
     user_id: string
     name: string
@@ -20,19 +20,28 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
   user,
   localUserId,
   adminEmail,
+  localEmail,
 }) => {
   const [isShown, setIsShown] = useState(false)
 
   const ref = useRef<HTMLVideoElement>(null)
 
-  const { sendOffer, pc } = usePeerConnection(roomId, localStream, user, localUserId)
+  const { pc } = usePeerConnection(roomId, localStream, user, localUserId, adminEmail, localEmail)
 
   const handleRemoteStream = (event: RTCTrackEvent) => {
     ref.current && (ref.current.srcObject = event.streams[0])
     setIsShown(true)
   }
 
+  if (!pc) return
+
   pc.ontrack = handleRemoteStream
+
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'failed') {
+      pc.restartIce()
+    }
+  }
 
   return (
     <div className='flex flex-col gap-10 p-3'>

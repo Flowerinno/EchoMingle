@@ -19,14 +19,14 @@ export const verify = async (): Promise<VerifyResponse | null> => {
   const token = getToken()
   if (!token) return null
 
-  const response = await api.get(`auth/verify/${token}`)
+  const { data } = await api.get(`auth/verify/${token}`)
 
-  if (response.status !== 200) {
+  if (!data?.id) {
     removeToken()
     return null
   }
 
-  return response.data
+  return data
 }
 
 export const logout = () => {

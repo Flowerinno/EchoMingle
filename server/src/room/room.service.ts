@@ -22,30 +22,48 @@ export class RoomService {
   }
 
   async deleteRoom(id: string, user_id: string) {
-    await this.prisma.room.delete({
+    await this.prisma.room.update({
       where: {
         id,
-        users: {
-          some: {
-            id: user_id,
-          },
-        },
+      },
+      data: {
+        is_deleted: true,
       },
     });
   }
 
-  async getRoom(room_id: string) {
+  async getRoom(room_id: string, userEmail?: string) {
     const room = await this.prisma.room.findUnique({
       where: {
         id: room_id,
       },
+      select: {
+        users: true,
+        is_deleted: true,
+        id: true,
+        admin_email: true,
+      },
     });
+    if (!room || room.is_deleted) return null;
 
-    if (!room) return null;
+    const isAdminRequest = room.admin_email === userEmail;
+
+    if (isAdminRequest) {
+      return {
+        isDeleted: room?.is_deleted,
+        room_id: room.id,
+        isAdminConnected: true,
+      };
+    }
+
+    let isAdminConnected = room.users.find(
+      (user) => user?.email === room?.admin_email,
+    );
 
     return {
       isDeleted: room?.is_deleted,
       room_id: room.id,
+      isAdminConnected: isAdminRequest ? true : !!isAdminConnected,
     };
   }
 }

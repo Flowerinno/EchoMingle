@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { RoomService } from './room.service';
 import { CreateRoomDto } from 'src/ws/dto/create-w.dto';
+import { RoomService } from './room.service';
 
 @Controller('room')
 export class RoomController {
@@ -16,8 +16,11 @@ export class RoomController {
     return this.roomService.deleteRoom(id, user_id);
   }
 
-  @Get('/:room_id')
-  getRoom(@Param('room_id') room_id: string) {
-    return this.roomService.getRoom(room_id);
+  @Get('/:room_id/:userEmail')
+  getRoom(
+    @Param('room_id') room_id: string,
+    @Param('userEmail') userEmail: string,
+  ) {
+    return this.roomService.getRoom(room_id, userEmail);
   }
 }

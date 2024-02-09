@@ -18,10 +18,11 @@ export const useMediaDevice = ({ isAutoStart = true, cache }: MediaDeviceProps) 
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
   const [soundEnabled, setSoundEnabled] = useState(false)
 
-  const constraints = {
+  const constraints: MediaStreamConstraints = {
     video: {
       facingMode: 'user',
       height: { min: 360, ideal: 720, max: 1080 },
+      aspectRatio: 16 / 9,
     },
     audio: true,
   }

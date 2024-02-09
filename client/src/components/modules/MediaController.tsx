@@ -9,7 +9,7 @@ interface MediaControllerProps {
   disconnect?: () => void
 }
 
-const style = 'border border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-14 min-h-8'
+const style = 'border border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-20 min-h-8'
 
 export const MediaController = ({
   toogle,
@@ -55,7 +55,7 @@ export const MediaController = ({
       <PhoneMissed
         onClick={disconnect}
         aria-label='disconnect'
-        className='text-red-400 border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-14 min-h-8'
+        className='text-red-400 border-2 rounded-md p-1 border-yellow-200 cursor-pointer min-w-20 min-h-8'
       />
     </div>
   )
