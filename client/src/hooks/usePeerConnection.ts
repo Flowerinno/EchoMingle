@@ -32,7 +32,7 @@ export const usePeerConnection = (
   // event which will trigger sendOffer function.
   const sendOffer = async () => {
     try {
-      if (adminEmail === localEmail && !isOfferSent) {
+      if (adminEmail === localEmail && !isOfferSent && pc.current) {
         console.log('STEP 2 - CREATE OFFER ON RENDER IF ADMIN')
         createOffer(pc.current).then((offer) => {
           console.log('STEP 3 - SENDING OFFER FOR REMOTE ', user.user_id)
