@@ -11,7 +11,21 @@ export interface ServerToClientEvents {
     socket_id: string
     user_id: string
   }) => void
+  re_connect: (payload: {
+    connected_client: string
+    name: string
+    user_id: string
+    connected_clients: ConnectedClients[]
+    adminEmail: string
+  }) => void
   new_client: (payload: {
+    connected_client: string
+    name: string
+    user_id: string
+    connected_clients: ConnectedClients[]
+    adminEmail: string
+  }) => void
+  on_remote_connected: (payload: {
     connected_client: string
     name: string
     user_id: string

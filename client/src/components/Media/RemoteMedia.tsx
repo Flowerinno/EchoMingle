@@ -1,60 +1,54 @@
 import { usePeerConnection } from '@/hooks/usePeerConnection'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Video } from '../modules'
 
 interface RemoteMediaProps {
   roomId: string
   localStream: MediaStream
   localUserId: string
-  localEmail: string
-  user: {
+  remoteUser: {
     user_id: string
     name: string
     email: string
   }
-  adminEmail: string
 }
 
 export const RemoteMedia: React.FC<RemoteMediaProps> = ({
   roomId,
   localStream,
-  user,
+  remoteUser,
   localUserId,
-  adminEmail,
-  localEmail,
 }) => {
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
   const [isShown, setIsShown] = useState(false)
+  const { pc } = usePeerConnection(roomId, localStream, remoteUser, localUserId)
 
-  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    if (!pc) return
 
-  const { pc } = usePeerConnection(roomId, localStream, user, localUserId, adminEmail, localEmail)
-
-  const handleRemoteStream = (event: RTCTrackEvent) => {
-    ref.current && (ref.current.srcObject = event.streams[0])
-    setIsShown(true)
-  }
-
-  if (!pc) return
-
-  pc.ontrack = handleRemoteStream
-
-  pc.onconnectionstatechange = () => {
-    if (pc.connectionState === 'failed') {
-      pc.restartIce()
+    const handleRemoteStream = (event: RTCTrackEvent) => {
+      const stream = event.streams[0]
+      if (!remoteStream) {
+        setRemoteStream(stream)
+        setIsShown(true)
+      }
     }
-  }
 
+    pc.ontrack = handleRemoteStream
+  }, [isShown, remoteStream, remoteStream?.active, pc])
+  console.log(remoteStream)
   return (
     <div className='flex flex-col gap-10 p-3'>
-      <video
+      <Video
         id={'remote'}
         width={400}
         height={400}
         autoPlay={true}
         playsInline={true}
         muted={false}
-        ref={ref}
         className='rounded-md max-w-400 max-h-400'
         style={{ transform: 'rotateY(180deg)', display: isShown ? 'block' : 'none' }}
+        srcObject={remoteStream}
       />
     </div>
   )

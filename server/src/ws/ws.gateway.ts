@@ -37,11 +37,13 @@ export class WsGateway {
 
   @SubscribeMessage('send_offer')
   async handleClientStream(client: Socket, dto: SendOfferDto) {
+    this.logger.log('SENDING OFFER')
     this.wsService.sendOffer(dto, client, this.server);
   }
 
   @SubscribeMessage('answer_to_offer')
   async handleAnswer(client: Socket, payload: any) {
+    this.logger.log('Answer to offer ' + payload.to + ' ' + payload.user_id);
     client.to(payload.to).emit('server_answer', {
       answer: payload.answer,
       socket_id: client.id,

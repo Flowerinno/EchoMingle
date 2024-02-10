@@ -48,11 +48,12 @@ export class WsService {
           adminEmail: room.admin_email,
         });
 
-        server.emit('joined_room', {
-          room_id: connectToRoomDto.room_id,
-          user_id: connectToRoomDto.user_id,
+        client.emit('on_remote_connected', {
+          connected_client: client.id,
           name: connectToRoomDto.name,
-          connected_users: room.users.length,
+          user_id: connectToRoomDto.user_id,
+          connected_clients: room.users,
+          adminEmail: room.admin_email,
         });
       }
 
@@ -81,10 +82,12 @@ export class WsService {
         adminEmail: room.admin_email,
       });
 
-      server.emit('joined_room', {
-        room_id: connectToRoomDto.room_id,
-        user_id: connectToRoomDto.user_id,
+      client.emit('on_remote_connected', {
+        connected_client: client.id,
         name: connectToRoomDto.name,
+        user_id: connectToRoomDto.user_id,
+        connected_clients: room.users,
+        adminEmail: room.admin_email,
       });
     } catch (error) {
       server.to(client.id).emit('on_error', {
@@ -138,7 +141,7 @@ export class WsService {
         return;
       }
 
-      server.emit('client_disconnected', {
+      client.broadcast.emit('client_disconnected', {
         name: dto.name,
         user_id: dto.user_id,
         socket_id: client.id,
@@ -157,6 +160,7 @@ export class WsService {
   }
 
   async sendOffer(payload: SendOfferDto, client: Socket, server: Server) {
+    this.logger.log('Sending offer to ' + payload.user_id);
     try {
       const room = await this.prisma.room.findUnique({
         where: { id: payload.room_id },
@@ -164,7 +168,7 @@ export class WsService {
       });
 
       if (!room) {
-        server.to(client.id).emit('on_error', {
+        client.emit('on_error', {
           message: 'Room does not exist',
         });
         return;
@@ -175,7 +179,7 @@ export class WsService {
       );
 
       if (!connected_users) {
-        server.to(client.id).emit('offer_to_empty_room', {
+        client.emit('offer_to_empty_room', {
           message: 'The room is empty',
         });
         return;

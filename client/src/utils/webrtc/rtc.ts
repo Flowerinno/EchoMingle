@@ -9,20 +9,15 @@ export function createPeerConnection() {
 export async function createOffer(peerConnection: RTCPeerConnection) {
   const sdp = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(sdp)
-
-  return sdp
 }
 
 export async function createAnswer(
   peerConnection: RTCPeerConnection,
   offer: RTCSessionDescriptionInit,
 ) {
-  peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
-
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
   const answer = await peerConnection.createAnswer()
   await peerConnection.setLocalDescription(answer)
-
-  return answer
 }
 
 export function addTracks(peerConnection: RTCPeerConnection, stream: MediaStream) {
@@ -37,4 +32,22 @@ export function registerPeerConnectionListeners(peerConnection: RTCPeerConnectio
   peerConnection.addEventListener('connectionstatechange', (event) => {
     console.log(`Connection state change: ${peerConnection.connectionState}`)
   })
+}
+
+export function closeConnection(
+  peerConnection: RTCPeerConnection | null,
+  setPc: (pc: RTCPeerConnection | null) => void,
+) {
+  if (peerConnection) {
+    peerConnection.ontrack = null
+    //@ts-expect-error
+    peerConnection.removeTrack = null
+    peerConnection.onicecandidate = null
+    peerConnection.oniceconnectionstatechange = null
+    peerConnection.onsignalingstatechange = null
+    peerConnection.onicegatheringstatechange = null
+    peerConnection.onnegotiationneeded = null
+    peerConnection.close()
+    setPc(null)
+  }
 }

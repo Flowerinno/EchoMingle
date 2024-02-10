@@ -59,7 +59,6 @@ export const Rooms = () => {
       api
         .get(`/room/${roomId}/${user.email}`)
         .then(({ data }) => {
-          console.log(data)
           if (!data?.room_id) return
 
           setRoomId(data?.room_id)
@@ -70,7 +69,7 @@ export const Rooms = () => {
   }, [])
 
   return (
-    <div className='min-h-screen min-w-0 w-11/12 flex flex-col flex-wrap items-center justify-start'>
+    <div className='min-w-0 w-11/12 flex flex-col flex-wrap items-center justify-start p-5'>
       <h2 className='text-2xl font-bold text-yellow-200 text-center p-2'>{t('title')}</h2>
       <div className='flex flex-row gap-10 p-2 w-11/12'>
         {!roomLink && <Button label={t('create')} onClick={generateRoom} className='w-full' />}
