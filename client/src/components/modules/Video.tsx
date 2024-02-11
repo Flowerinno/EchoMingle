@@ -9,6 +9,7 @@ export const Video = ({ srcObject, ...props }: PropsType) => {
 
   useEffect(() => {
     if (!refVideo.current || !srcObject) return
+    console.log(srcObject)
     refVideo.current.srcObject = srcObject
   }, [srcObject])
 

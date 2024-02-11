@@ -1,6 +1,7 @@
 import { usePeerConnection } from '@/hooks/usePeerConnection'
 import { useEffect, useRef, useState } from 'react'
-import { Video } from '../modules'
+import { Spinner, Video } from '../modules'
+import { socket } from '@/lib/ws'
 
 interface RemoteMediaProps {
   roomId: string
@@ -11,6 +12,7 @@ interface RemoteMediaProps {
     name: string
     email: string
   }
+  isPreview: boolean
 }
 
 export const RemoteMedia: React.FC<RemoteMediaProps> = ({
@@ -18,25 +20,22 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
   localStream,
   remoteUser,
   localUserId,
+  isPreview,
 }) => {
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
-  const [isShown, setIsShown] = useState(false)
-  const { pc } = usePeerConnection(roomId, localStream, remoteUser, localUserId)
+  const { pc, remoteStream } = usePeerConnection(roomId, localStream, remoteUser, localUserId)
+  const [reconnects, setReconnects] = useState(0)
 
   useEffect(() => {
-    if (!pc) return
-
-    const handleRemoteStream = (event: RTCTrackEvent) => {
-      const stream = event.streams[0]
-      if (!remoteStream) {
-        setRemoteStream(stream)
-        setIsShown(true)
+    socket.on('client_reconnected', ({ user_id }) => {
+      if (user_id === remoteUser.user_id) {
+        console.log('Client reconnected - ' + user_id)
+        setReconnects((prev) => prev + 1)
       }
-    }
+    })
+  }, [isPreview, remoteStream, reconnects])
 
-    pc.ontrack = handleRemoteStream
-  }, [isShown, remoteStream, remoteStream?.active, pc])
-  console.log(remoteStream)
+  console.log(pc, 'remote')
+
   return (
     <div className='flex flex-col gap-10 p-3'>
       <Video
@@ -47,7 +46,7 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
         playsInline={true}
         muted={false}
         className='rounded-md max-w-400 max-h-400'
-        style={{ transform: 'rotateY(180deg)', display: isShown ? 'block' : 'none' }}
+        style={{ transform: 'rotateY(180deg)', display: isPreview ? 'none' : 'block' }}
         srcObject={remoteStream}
       />
     </div>

@@ -13,7 +13,7 @@ export const createRoom = async (
   }
 
   const domain = new URL(window.location.href).origin
-  const link = `${domain}/rooms/pending?room_id=${data?.room_id}`
+  const link = `${domain}/rooms/${data?.room_id}`
 
   setRoomLink(data.room_id)
 

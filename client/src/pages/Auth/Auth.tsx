@@ -27,7 +27,7 @@ export const Auth = () => {
     setToken(token)
 
     if (room_id) {
-      navigate(`${ERoutes.pending}?room_id=${room_id}`)
+      navigate(`${ERoutes.rooms}/${room_id}`)
       return
     }
 
@@ -69,7 +69,7 @@ export const Auth = () => {
     try {
       if (type === 'login') {
         const res = await formLogin(email)
-
+        console.log(res)
         if (res?.token) {
           handleSuccess(res.token)
           return

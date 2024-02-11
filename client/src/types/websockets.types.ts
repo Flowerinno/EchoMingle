@@ -46,6 +46,9 @@ export interface ServerToClientEvents {
     name: string
     connected_users: number
   }) => void
+  connected_clients: (payload: { connected_clients: ConnectedClients[] }) => void
+  client_reconnected: (payload: { user_id: string }) => void
+  client_left: (payload: { user_id: string }) => void
 }
 
 export interface ClientToServerEvents {
@@ -59,7 +62,13 @@ export interface ClientToServerEvents {
     answer: RTCSessionDescriptionInit
   }) => void
   candidate: (payload: any) => void
-  disconnect_from_room: (payload: { room_id: string; user_id: string; name: string }) => void
+  disconnect_from_room: (payload: {
+    room_id: string
+    user_id: string
+    name: string
+    email: string
+  }) => void
+  get_connected_clients: (payload: { room_id: string }) => void
 }
 
 export interface InterServerEvents {

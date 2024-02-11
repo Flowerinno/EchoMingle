@@ -26,18 +26,19 @@ export class WsGateway {
 
   @SubscribeMessage('disconnect')
   async handleDisconnect(client: Socket, room_id: string) {
-    client.broadcast.emit('client_disconnect', { socket_id: client.id });
+    client.broadcast
+      .to(room_id)
+      .emit('client_disconnect', { socket_id: client.id });
   }
 
   @SubscribeMessage('connect_to_room')
   findOne(client: Socket, connectToRoomDto: ConnectToRoomDto) {
-    this.logger.log('Client CONNECTED ' + client.id);
     this.wsService.connectToRoom(connectToRoomDto, client, this.server);
   }
 
   @SubscribeMessage('send_offer')
   async handleClientStream(client: Socket, dto: SendOfferDto) {
-    this.logger.log('SENDING OFFER')
+    this.logger.log('SENDING OFFER');
     this.wsService.sendOffer(dto, client, this.server);
   }
 
@@ -53,7 +54,7 @@ export class WsGateway {
 
   @SubscribeMessage('candidate')
   async handleCandidate(client: Socket, payload: any) {
-    client.broadcast.emit('server_candidate', {
+    client.broadcast.to(payload.room_id).emit('server_candidate', {
       candidate: payload.candidate,
       socket_id: client.id,
       user_id: payload.user_id,
@@ -66,5 +67,10 @@ export class WsGateway {
     disconnectFromRoomDto: DisconnectFromRoomDto,
   ) {
     this.wsService.handleDisconnect(disconnectFromRoomDto, client, this.server);
+  }
+
+  @SubscribeMessage('get_connected_clients')
+  async getConnectedClients(client: Socket, dto: { room_id: string }) {
+    this.wsService.getConnectedClients(client, dto.room_id);
   }
 }

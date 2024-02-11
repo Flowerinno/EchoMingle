@@ -42,7 +42,7 @@ export const Rooms = () => {
   }
 
   const handleNavigate = () => {
-    navigate(`/rooms/pending?room_id=${roomId}`)
+    navigate(`/rooms/${roomId}`)
   }
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export const Rooms = () => {
           if (!data?.room_id) return
 
           setRoomId(data?.room_id)
-          setRoomLink(domain + `/rooms/pending?room_id=${data?.room_id}`)
+          setRoomLink(domain + `/rooms/${data?.room_id}`)
         })
         .catch((_) => ToastifyRoot.error(t('error')))
     }
@@ -74,7 +74,7 @@ export const Rooms = () => {
       <div className='flex flex-row gap-10 p-2 w-11/12'>
         {!roomLink && <Button label={t('create')} onClick={generateRoom} className='w-full' />}
         {roomLink && (
-          <div className='flex flex-row flex-wrap items-center justify-center gap-5 min-w-0'>
+          <div className='flex flex-row flex-wrap items-center justify-center gap-5 min-w-0 w-full'>
             <Button label={t('preview')} onClick={handleNavigate} className='w-full' />
             <div
               className='border-2 p-2 rounded-md border-yellow-200 text-white flex flex-row text-balance text-clip gap-4 w-full text-center items-center justify-center cursor-pointer'

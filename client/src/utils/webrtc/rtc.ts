@@ -7,8 +7,9 @@ export function createPeerConnection() {
 }
 
 export async function createOffer(peerConnection: RTCPeerConnection) {
-  const sdp = await peerConnection.createOffer()
-  await peerConnection.setLocalDescription(sdp)
+  const offer = await peerConnection.createOffer()
+  await peerConnection.setLocalDescription(offer)
+  return offer
 }
 
 export async function createAnswer(
@@ -18,6 +19,8 @@ export async function createAnswer(
   await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
   const answer = await peerConnection.createAnswer()
   await peerConnection.setLocalDescription(answer)
+
+  return answer
 }
 
 export function addTracks(peerConnection: RTCPeerConnection, stream: MediaStream) {
@@ -28,10 +31,29 @@ export function addTracks(peerConnection: RTCPeerConnection, stream: MediaStream
   })
 }
 
-export function registerPeerConnectionListeners(peerConnection: RTCPeerConnection) {
-  peerConnection.addEventListener('connectionstatechange', (event) => {
-    console.log(`Connection state change: ${peerConnection.connectionState}`)
-  })
+export function registerPeerConnectionListeners(peerConnection: RTCPeerConnection | null) {
+  if (peerConnection)
+    peerConnection.addEventListener('connectionstatechange', () => {
+      switch (peerConnection.connectionState) {
+        case 'connected':
+          console.log('Connection established!')
+          break
+        case 'failed':
+          // setPc(createPeerConnection())
+          break
+        case 'disconnected':
+          console.log('Disconnected')
+          break
+        case 'closed':
+          // setPc(createPeerConnection())
+          break
+        case 'connecting':
+          console.log('Connecting')
+          break
+        default:
+          break
+      }
+    })
 }
 
 export function closeConnection(
@@ -47,6 +69,7 @@ export function closeConnection(
     peerConnection.onsignalingstatechange = null
     peerConnection.onicegatheringstatechange = null
     peerConnection.onnegotiationneeded = null
+    peerConnection.onconnectionstatechange = null
     peerConnection.close()
     setPc(null)
   }
