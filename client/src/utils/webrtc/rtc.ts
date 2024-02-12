@@ -1,8 +1,9 @@
-const PC_CONFIG = {
-  iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }],
-}
+export function createPeerConnection(iceServers: RTCIceServer[] | null = []) {
+  const SERVERS = iceServers?.length ? iceServers : [{ urls: ['stun:stun.l.google.com:19302'] }]
 
-export function createPeerConnection() {
+  const PC_CONFIG = {
+    iceServers: SERVERS,
+  }
   return new RTCPeerConnection(PC_CONFIG)
 }
 

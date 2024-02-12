@@ -18,8 +18,9 @@ export const usePeerConnection = (
     email: string
   },
   localUserId: string,
+  iceServers: RTCIceServer[] | null,
 ) => {
-  const [pc, setPc] = useState<RTCPeerConnection | null>(createPeerConnection())
+  const [pc, setPc] = useState<RTCPeerConnection | null>(createPeerConnection(iceServers))
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
   const sendOffer = async () => {

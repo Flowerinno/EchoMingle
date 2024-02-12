@@ -49,3 +49,12 @@ export const formLogin = async (email: string): Promise<AuthResponse> => {
   return data
 }
 
+export const getIceServers = async () => {
+  const { data } = await api.get('/ice')
+
+  if (!data) {
+    return { message: 'Error fetching ice servers' }
+  }
+
+  return data
+}

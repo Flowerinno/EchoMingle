@@ -1,3 +1,4 @@
+import { getIceServers } from '@/api/api'
 import { Media } from '@/components'
 import { RemoteMedia } from '@/components/Media'
 import { Button, MediaController } from '@/components/modules'
@@ -27,6 +28,7 @@ export const Room = () => {
   const localUser = useOutletContext<VerifyResponse>()
   const roomId = useMemo(() => window.location.pathname.split('rooms/')[1], [])
   const [peerConnections, setPeerConnections] = useState<Client[] | []>([])
+  const [servers, setServers] = useState<RTCIceServer[] | null>(null)
   const [isPreview, setIsPreview] = useState(true)
   const [isConnected, setIsConnected] = useState(false)
   const cache = getItem<Settings>('echomingle_media_settings')
@@ -72,6 +74,14 @@ export const Room = () => {
   useEffect(() => {
     if (!roomId) {
       navigate(ERoutes.home)
+    }
+
+    if (!servers) {
+      getIceServers().then((data) => {
+        if (data) {
+          setServers(data)
+        }
+      })
     }
 
     if (!isConnected && stream) {
@@ -129,6 +139,7 @@ export const Room = () => {
           isConnected &&
           peerConnections.map((user) => (
             <RemoteMedia
+              iceServers={servers}
               isPreview={isPreview}
               key={user.user_id}
               localUserId={localUser?.id}

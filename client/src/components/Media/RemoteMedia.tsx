@@ -13,6 +13,7 @@ interface RemoteMediaProps {
     email: string
   }
   isPreview: boolean
+  iceServers: RTCIceServer[] | null
 }
 
 export const RemoteMedia: React.FC<RemoteMediaProps> = ({
@@ -21,8 +22,9 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
   remoteUser,
   localUserId,
   isPreview,
+  iceServers
 }) => {
-  const { pc, remoteStream } = usePeerConnection(roomId, localStream, remoteUser, localUserId)
+  const { pc, remoteStream } = usePeerConnection(roomId, localStream, remoteUser, localUserId, iceServers)
   const [reconnects, setReconnects] = useState(0)
 
   useEffect(() => {
