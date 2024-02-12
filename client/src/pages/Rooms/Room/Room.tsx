@@ -67,7 +67,7 @@ export const Room = () => {
       navigate(ERoutes.home)
     }
 
-    if (!isConnected) {
+    if (!isConnected && stream) {
       socket.emit('get_connected_clients', { room_id: roomId })
       socket.emit('connect_to_room', {
         room_id: roomId,
