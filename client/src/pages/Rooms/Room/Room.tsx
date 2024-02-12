@@ -57,6 +57,7 @@ export const Room = () => {
     socket.connect()
 
     return () => {
+      console.log('SOCKET DISCONNECTED')
       socket.disconnect()
     }
   }, [])

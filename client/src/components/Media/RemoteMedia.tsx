@@ -34,8 +34,6 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
     })
   }, [isPreview, remoteStream, reconnects])
 
-  console.log(pc, 'remote')
-
   return (
     <div className='flex flex-col gap-10 p-3'>
       <Video

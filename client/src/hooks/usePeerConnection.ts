@@ -21,9 +21,6 @@ export const usePeerConnection = (
 ) => {
   const [pc, setPc] = useState<RTCPeerConnection | null>(createPeerConnection())
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
-  const [isOfferSent, setIsOfferSent] = useState(false)
-  const [isAnswerSent, setIsAnswerSent] = useState(false)
-  const [isCandidateAdded, setIsCandidateAdded] = useState(false)
 
   const sendOffer = async () => {
     if (pc) {
