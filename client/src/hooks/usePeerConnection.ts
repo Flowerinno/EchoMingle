@@ -79,6 +79,7 @@ export const usePeerConnection = (
           to,
           user_id: remoteUser.user_id,
         })
+        await pc.setLocalDescription(answer)
       }
     })
 

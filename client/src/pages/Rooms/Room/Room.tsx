@@ -56,10 +56,10 @@ export const Room = () => {
   useEffect(() => {
     socket.connect()
 
-    return () => {
-      console.log('SOCKET DISCONNECTED')
-      socket.disconnect()
-    }
+    // return () => {
+    //   console.log('SOCKET DISCONNECTED')
+    //   socket.disconnect()
+    // }
   }, [])
 
   useEffect(() => {

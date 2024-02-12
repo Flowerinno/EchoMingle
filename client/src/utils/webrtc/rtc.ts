@@ -18,7 +18,6 @@ export async function createAnswer(
 ) {
   await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
   const answer = await peerConnection.createAnswer()
-  await peerConnection.setLocalDescription(answer)
 
   return answer
 }

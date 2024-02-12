@@ -9,7 +9,7 @@ export const Protected = () => {
   const [user, setUser] = useState<VerifyResponse | null>(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const room_id = new URLSearchParams(location.search).get('room_id')
+  const room_id = location.pathname.split('/')[2]
 
   useEffect(() => {
     const fetch = async () => {
@@ -17,6 +17,7 @@ export const Protected = () => {
         const res = await verify()
         if (!res?.id) {
           removeToken()
+          console.log(room_id)
           if (room_id) {
             navigate(`${ERoutes.auth}?room_id=${room_id}`)
             return
