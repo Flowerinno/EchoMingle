@@ -146,13 +146,16 @@ export class WsService {
       });
 
       if (isAdminLeft) {
-        client.broadcast.to(dto.room_id).emit('admin_disconnected');
+        server.to(dto.room_id).emit('admin_disconnected');
         this.prisma.room.update({
           where: { id: dto.room_id },
           data: {
             is_deleted: true,
           },
         });
+        client.leave(dto.room_id);
+        client.disconnect();
+
         this.logger.log('Admin disconnected');
         return;
       }
