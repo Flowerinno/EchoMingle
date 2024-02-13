@@ -59,15 +59,17 @@ export const Room = () => {
     socket.connect()
 
     return () => {
-      console.log('DISCONNECTED !!!!!!!')
-      socket.emit('disconnect_from_room', {
-        room_id: roomId,
-        user_id: localUser.id,
-        name: localUser.name,
-        email: localUser.email,
-      })
-      removeRoomLink()
-      window.location.reload()
+      if (process.env.NODE_ENV === 'production') {
+        console.log('DISCONNECTED !!!!!!!')
+        socket.emit('disconnect_from_room', {
+          room_id: roomId,
+          user_id: localUser.id,
+          name: localUser.name,
+          email: localUser.email,
+        })
+        removeRoomLink()
+        window.location.reload()
+      }
     }
   }, [])
 
@@ -76,22 +78,19 @@ export const Room = () => {
       navigate(ERoutes.home)
     }
 
-    if (!servers) {
+    if (!isConnected && stream) {
       getIceServers().then((data) => {
         if (data) {
           setServers(data)
+          socket.emit('get_connected_clients', { room_id: roomId })
+          socket.emit('connect_to_room', {
+            room_id: roomId,
+            user_id: localUser.id,
+            name: localUser.name,
+          })
+          setIsConnected(true)
         }
       })
-    }
-
-    if (!isConnected && stream) {
-      socket.emit('get_connected_clients', { room_id: roomId })
-      socket.emit('connect_to_room', {
-        room_id: roomId,
-        user_id: localUser.id,
-        name: localUser.name,
-      })
-      setIsConnected(true)
     }
 
     socket.on('client_left', (data) => {

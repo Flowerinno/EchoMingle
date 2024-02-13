@@ -5,11 +5,16 @@ export interface ServerToClientEvents {
   onError: (obj: { message: string }) => void
   connection: (sockets: string[]) => void
   incoming_offer: (payload: IncomingOffer) => void
-  server_candidate: (payload: { candidate: RTCIceCandidateInit; user_id: string }) => void
+  server_candidate: (payload: {
+    candidate: RTCIceCandidateInit
+    remote_user_id: string
+    local_user_id: string
+  }) => void
   server_answer: (payload: {
     answer: RTCSessionDescriptionInit
     socket_id: string
-    user_id: string
+    remote_user_id: string
+    local_user_id: string
   }) => void
   re_connect: (payload: {
     connected_client: string
@@ -57,7 +62,8 @@ export interface ClientToServerEvents {
   send_offer: (payload: SendOffer) => void
   answer_to_offer: (payload: {
     room_id: string
-    user_id: string
+    remote_user_id: string
+    local_user_id: string
     to: string
     answer: RTCSessionDescriptionInit
   }) => void
@@ -85,13 +91,15 @@ interface ConnectedClients {
 interface SendOffer {
   room_id: string
   name: string
-  user_id: string
+  remote_user_id: string
+  local_user_id: string
   offer: RTCSessionDescriptionInit
 }
 
 interface IncomingOffer {
   offer: RTCSessionDescriptionInit
   name: string
-  user_id: string
+  remote_user_id: string
+  local_user_id: string
   to: string
 }

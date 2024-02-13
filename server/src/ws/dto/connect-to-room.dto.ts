@@ -14,6 +14,7 @@ export class DisconnectFromRoomDto {
 export class SendOfferDto {
   room_id: string;
   name: string;
-  user_id: string;
+  remote_user_id: string;
+  local_user_id: string;
   offer: RTCSessionDescriptionInit;
 }

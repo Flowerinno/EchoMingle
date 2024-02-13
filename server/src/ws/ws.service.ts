@@ -184,7 +184,7 @@ export class WsService {
   }
 
   async sendOffer(payload: SendOfferDto, client: Socket, server: Server) {
-    this.logger.log('Sending offer to ' + payload.user_id);
+    this.logger.log('Sending offer to ' + payload.remote_user_id);
     try {
       const room = await this.prisma.room.findUnique({
         where: { id: payload.room_id },
@@ -199,7 +199,7 @@ export class WsService {
       }
 
       const connected_users = room.users.some(
-        (user) => user.id !== payload.user_id,
+        (user) => user.id !== payload.remote_user_id,
       );
 
       if (!connected_users) {
@@ -212,7 +212,8 @@ export class WsService {
       client.broadcast.to(payload.room_id).emit('incoming_offer', {
         to: client.id,
         offer: payload.offer,
-        user_id: payload.user_id,
+        remote_user_id: payload.remote_user_id,
+        local_user_id: payload.local_user_id,
         name: payload.name,
       });
     } catch (error) {

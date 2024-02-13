@@ -25,3 +25,7 @@ For those who struggling:
 5. **Media**: Once the `offer` and `answer` are exchanged, the `ICE` framework has found a path for the media, and the peers have agreed on the codec and media format to use, the media begins to flow between the peers.
 
 # `WARNING`: This project is still under development and hosted for free on [Cloudflare Pages](https://pages.cloudflare.com/) and [Render](https://render.com/). The free tier has limits. If the limit is reached, the website will be temporarily disabled. If you encounter any issues, please try again later. The website may be slow to load due to the free tier limitations and has 50 seconds of startup time if inactive (a.k.a no calls to backend).
+
+# TURN/STURN server
+
+Hosted on [metered.ca](https://www.metered.ca/)

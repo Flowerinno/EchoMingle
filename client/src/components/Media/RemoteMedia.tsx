@@ -22,9 +22,15 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
   remoteUser,
   localUserId,
   isPreview,
-  iceServers
+  iceServers,
 }) => {
-  const { pc, remoteStream } = usePeerConnection(roomId, localStream, remoteUser, localUserId, iceServers)
+  const { pc, remoteStream } = usePeerConnection(
+    roomId,
+    localStream,
+    remoteUser,
+    localUserId,
+    iceServers,
+  )
   const [reconnects, setReconnects] = useState(0)
 
   useEffect(() => {

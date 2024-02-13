@@ -44,11 +44,12 @@ export class WsGateway {
 
   @SubscribeMessage('answer_to_offer')
   async handleAnswer(client: Socket, payload: any) {
-    this.logger.log('Answer to offer ' + payload.to + ' ' + payload.user_id);
+    this.logger.log('Answer to offer ' + payload.to + ' ' + payload.remote_user_id);
     client.to(payload.to).emit('server_answer', {
       answer: payload.answer,
       socket_id: client.id,
-      user_id: payload.user_id,
+      remote_user_id: payload.remote_user_id,
+      local_user_id: payload.local_user_id
     });
   }
 
@@ -57,7 +58,8 @@ export class WsGateway {
     client.broadcast.to(payload.room_id).emit('server_candidate', {
       candidate: payload.candidate,
       socket_id: client.id,
-      user_id: payload.user_id,
+      remote_user_id: payload.remote_user_id,
+      local_user_id: payload.local_user_id,
     });
   }
 
