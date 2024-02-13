@@ -58,19 +58,19 @@ export const Room = () => {
   useEffect(() => {
     socket.connect()
 
-    return () => {
-      if (process.env.NODE_ENV === 'production') {
-        console.log('DISCONNECTED !!!!!!!')
-        socket.emit('disconnect_from_room', {
-          room_id: roomId,
-          user_id: localUser.id,
-          name: localUser.name,
-          email: localUser.email,
-        })
-        removeRoomLink()
-        window.location.reload()
-      }
-    }
+    // return () => {
+    //   if (process.env.NODE_ENV === 'production') {
+    //     console.log('DISCONNECTED !!!!!!!')
+    //     socket.emit('disconnect_from_room', {
+    //       room_id: roomId,
+    //       user_id: localUser.id,
+    //       name: localUser.name,
+    //       email: localUser.email,
+    //     })
+    //     removeRoomLink()
+    //     window.location.reload()
+    //   }
+    // }
   }, [])
 
   useEffect(() => {
