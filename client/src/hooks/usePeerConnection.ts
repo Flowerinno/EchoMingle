@@ -55,11 +55,11 @@ export const usePeerConnection = (
       pc.ontrack = handleRemoteStream
     }
 
-    socket.on('client_disconnected', ({ user_id }) => {
-      if (user_id === remoteUser.user_id) {
-        closeConnection(pc, setPc)
-      }
-    })
+    // socket.on('client_disconnected', ({ user_id }) => {
+    //   if (user_id === remoteUser.user_id) {
+    //     closeConnection(pc, setPc)
+    //   }
+    // })
 
     socket.on('on_remote_connected', (data) => {
       if (data?.connected_clients?.length === 0 || localUserId !== data?.user_id) {
