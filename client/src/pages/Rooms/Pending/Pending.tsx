@@ -29,7 +29,6 @@ export const Pending = () => {
   ) as Settings
 
   const { stream } = useMediaDevice({
-    isAutoStart: true,
     cache,
   })
 
