@@ -34,7 +34,6 @@ export const Room = () => {
   const cache = getItem<Settings>('echomingle_media_settings')
 
   const { stream, toogle, audioEnabled, videoEnabled, soundEnabled } = useMediaDevice({
-    isAutoStart: true,
     cache,
   })
 
@@ -130,10 +129,11 @@ export const Room = () => {
   }, [isPreview, isConnected, stream, joinRoom])
 
   return (
-    <div className='flex flex-col gap-10 items-center justify-start w-full'>
-      <div className='flex flex-row flex-wrap gap-5 items-start justify-center p-4'>
-        <Media isLocal stream={stream} />
-        {isPreview && <Button label={'Join'} className='w-8/12' onClick={joinRoom} />}
+    <div className='flex flex-col gap-10 items-center justify-center w-full'>
+      <div className='flex flex-row flex-wrap gap-5 items-center justify-center p-4'>
+        {isPreview && (
+          <Button label={'Join'} className='w-8/12 min-w-80 text-center' onClick={joinRoom} />
+        )}
         {stream &&
           isConnected &&
           peerConnections.map((user) => (
@@ -148,6 +148,7 @@ export const Room = () => {
             />
           ))}
       </div>
+      <Media isLocal stream={stream} isPeersConnected={peerConnections?.length > 0} />
       <div>
         <MediaController
           disconnect={disconnect}

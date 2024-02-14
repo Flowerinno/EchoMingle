@@ -8,11 +8,10 @@ type Settings = {
 }
 
 interface MediaDeviceProps {
-  isAutoStart?: boolean
   cache?: Settings
 }
 
-export const useMediaDevice = ({ isAutoStart = true, cache }: MediaDeviceProps) => {
+export const useMediaDevice = ({ cache }: MediaDeviceProps) => {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [isVideoEnabled, setIsVideoEnabled] = useState<boolean | null>(null)
   const [isAudioEnabled, setIsAudioEnabled] = useState<boolean | null>(null)
@@ -21,7 +20,8 @@ export const useMediaDevice = ({ isAutoStart = true, cache }: MediaDeviceProps) 
   const constraints: MediaStreamConstraints = {
     video: {
       facingMode: 'user',
-      height: { min: 360, ideal: 720, max: 1080 },
+      width: { min: 360, ideal: 720, max: 720 },
+      height: { min: 360, ideal: 720, max: 720 },
       aspectRatio: 16 / 9,
     },
     audio: true,

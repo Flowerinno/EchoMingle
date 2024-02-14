@@ -51,7 +51,7 @@ export const RemoteMedia: React.FC<RemoteMediaProps> = ({
         autoPlay={true}
         playsInline={true}
         muted={false}
-        className='rounded-md max-w-400 max-h-400'
+        className='rounded-md min-w-80 min-h-80'
         style={{ transform: 'rotateY(180deg)', display: isPreview ? 'none' : 'block' }}
         srcObject={remoteStream}
       />

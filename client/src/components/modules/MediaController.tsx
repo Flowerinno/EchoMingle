@@ -48,7 +48,7 @@ export const MediaController = ({
   }, [])
 
   return (
-    <div className='flex flex-flow gap-5 justify-center w-full'>
+    <div className='flex flex-flow gap-5 justify-center w-full z-50 p-10'>
       {Micro}
       {/* {Sound} */}
       {Vid}

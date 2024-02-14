@@ -73,6 +73,7 @@ export class WsGateway {
 
   @SubscribeMessage('get_connected_clients')
   async getConnectedClients(client: Socket, dto: { room_id: string }) {
+    this.logger.log('Getting connected clients for ' + dto.room_id)
     this.wsService.getConnectedClients(client, dto.room_id);
   }
 }
