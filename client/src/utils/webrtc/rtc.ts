@@ -38,13 +38,13 @@ export function registerPeerConnectionListeners(peerConnection: RTCPeerConnectio
           console.log('Connection established!')
           break
         case 'failed':
-          // setPc(createPeerConnection())
+          console.log('Failed')
           break
         case 'disconnected':
           console.log('Disconnected')
           break
         case 'closed':
-          // setPc(createPeerConnection())
+          console.log('Closed')
           break
         case 'connecting':
           console.log('Connecting')
